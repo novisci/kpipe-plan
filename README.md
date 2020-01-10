@@ -1,4 +1,4 @@
-# `kpipe` Stages
+# `kpipe` Plan Compiler
 
 ## Basics
 A similar structure is used for all items found in a set of kpipe operations. Some arguments are optional and/or inferred by their position. The three forms of an operation are:
