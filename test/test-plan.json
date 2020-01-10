@@ -1,0 +1,16 @@
+[
+  ["def", {
+    "prefix": "s3://novisci-data/P0023/20190930/csv",
+    "name": "Test Plan"
+  }],
+  ["with", {
+    "topic": ["rawtopic", "other"]
+  }, [
+    ["seq", "0 10", [
+      ["task", "tasks/csvtotopic", [
+        "${prefix}/novisci_events_20sep2019-part-${X}.csv",
+        "${topic}"
+      ]]
+    ]]
+  ]]
+]

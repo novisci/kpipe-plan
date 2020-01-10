@@ -1,0 +1,38 @@
+[
+  ["def", {
+    "BASE": "${planUid}",
+    "DEST": "s3://novisci-data/P0023/20190930/cdf",
+    "DATE": "${NOW}"
+  }],
+  ["plan", "PCSK9i Sankey Events", [
+    ["stage", "Import Jigsaw", [
+      ["with", {
+        "TOPIC": ["stat", "ezet", "pcsk9"],
+        "PARTS": ["192", "96", "24"]
+      }, [
+        ["exec", "kpipe", ["kafka", "delete", "${BASE}-${TOPIC}"]],
+        ["exec", "kpipe", ["kafka", "create", "${BASE}-${TOPIC}", "-p", "${PARTS}"]]
+      ]],
+      ["spread", "Run Tasks", [
+        ["with", {
+          "IDX": [0, 1, 2, 3]
+        }, [
+          ["task", "tasks/pcsk9sankey", ["${IDX}", "4"]]
+        ]]
+      ]]
+    ]],
+    ["stage", "Export CDF", [
+      ["spread", "Run Exports", [
+        ["with", {
+          "SEQ": ["0 191", "0 95", "0 23"],
+          "TOPIC": ["stat", "ezet", "pcsk9"],
+          "COHORT": ["statin", "ezetimibe", "pcsk9i"]
+        }, [
+          ["seq", "${SEQ}", [
+            ["task", "tasks/exportcdf", ["${BASE}-${TOPIC}", "${I}", "${DEST}/${DATE}/P0023_${COHORT}-events-cdf-${X}.csv"]]
+          ]]   
+        ]]
+      ]]
+    ]]
+  ]]
+]

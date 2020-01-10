@@ -1,0 +1,8 @@
+node_modules
+data
+*.zip
+*.csv
+.vscode
+.env
+archive
+coverage

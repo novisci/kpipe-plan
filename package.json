@@ -1,0 +1,44 @@
+{
+  "name": "kpipe-plan",
+  "version": "0.1.0",
+  "description": "NoviSci kpipe plan compiler",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "npm run daemon",
+    "build": "npm run build-ts && npm run lint",
+    "test": "./node_modules/.bin/jest --forceExit --coverage --verbose",
+    "watch-test": "npm run test -- --watchAll",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "lint": "tsc --noEmit && eslint . --ext .js,.jsx,.ts,.tsx"
+  },
+  "author": "Paul Rowan <prowan@novisci.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/parser": "^7.7.3",
+    "@babel/types": "^7.7.2",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^13.1.6",
+    "@types/uid-generator": "^2.0.2",
+    "@typescript-eslint/eslint-plugin": "^2.11.0",
+    "@typescript-eslint/parser": "^2.11.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.6",
+    "eslint": "^5.16.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-friendly-formatter": "^4.0.1",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jest": "^22.6.4",
+    "eslint-plugin-json": "^2.0.1",
+    "eslint-plugin-node": "^9.2.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "uid-generator": "^2.0.0"
+  }
+}
