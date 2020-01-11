@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const oper_1 = require("../src/oper");
 const testCompile = (ops) => {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
 };
 test('malformed input (<2 elements) throws error', () => {
@@ -58,10 +59,11 @@ test('with operation generates sequences', () => {
                 PART: ['fred', 'barney', 'wilma', 'betty'],
                 IDX: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
             }, [
-                ['echo', '${IDX} ${PART} ${PARITY}']
+                ['echo', '${IDX} ${PART} ${PARITY}'] /* eslint-disable-line no-template-curly-in-string */
             ]]
     ];
     // console.error('IN', ...ops)
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
@@ -80,11 +82,12 @@ test('with operation generates sequences', () => {
 });
 test('seq operation (start, end) interpolates operation string argument', () => {
     const ops = [
-        ["seq", { start: 1, end: 5 }, [
-                ["echo", "${I} ${X}"]
+        ['seq', { start: 1, end: 5 }, [
+                ['echo', '${I} ${X}'] /* eslint-disable-line no-template-curly-in-string */
             ]]
     ];
     // console.error('IN', ...ops)
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
@@ -93,53 +96,61 @@ test('seq operation (start, end) interpolates operation string argument', () => 
         ['echo', '2 00002'],
         ['echo', '3 00003'],
         ['echo', '4 00004'],
-        ['echo', '5 00005'],
+        ['echo', '5 00005']
     ]));
 });
+/* eslint-disable-next-line quotes */
 test('seq options {"start": 1, "end": 10} => {start: 1, end: 10, by: 1}', () => {
     const res = oper_1.seqOpts({ start: 1, end: 10 });
     expect(res.start).toBe(1);
     expect(res.end).toBe(10);
     expect(res.by).toBe(1);
 });
+/* eslint-disable-next-line quotes */
 test('seq options {"count": 10} => {start: 0, end: 9, by: 1}', () => {
     const res = oper_1.seqOpts({ count: 10 });
     expect(res.start).toBe(0);
     expect(res.end).toBe(9);
     expect(res.by).toBe(1);
 });
+/* eslint-disable-next-line quotes */
 test('seq options {"start": 1, "count": 10} => {start: 1, end: 10, by: 1}', () => {
     const res = oper_1.seqOpts({ start: 1, count: 10 });
     expect(res.start).toBe(1);
     expect(res.end).toBe(10);
     expect(res.by).toBe(1);
 });
+/* eslint-disable-next-line quotes */
 test('seq options {"start": 1, "end": 10, "by": 2} => {start: 1, end: 10, by: 2}', () => {
     const res = oper_1.seqOpts({ start: 1, end: 10, by: 2 });
     expect(res.start).toBe(1);
     expect(res.end).toBe(10);
     expect(res.by).toBe(2);
 });
+/* eslint-disable-next-line quotes */
 test('seq options {"count": 10, "by": 2} => {start: 0, end: 9, by: 2}', () => {
     const res = oper_1.seqOpts({ count: 10, by: 2 });
     expect(res.start).toBe(0);
     expect(res.end).toBe(9);
     expect(res.by).toBe(2);
 });
+/* eslint-disable-next-line quotes */
 test('seq options "10" => {start: 0, end: 9, by: 1}', () => {
-    const res = oper_1.seqOpts("10");
+    const res = oper_1.seqOpts('10');
     expect(res.start).toBe(0);
     expect(res.end).toBe(9);
     expect(res.by).toBe(1);
 });
+/* eslint-disable-next-line quotes */
 test('seq "1 10" => {start: 1, end: 10, by: 1}', () => {
-    const res = oper_1.seqOpts("1 10");
+    const res = oper_1.seqOpts('1 10');
     expect(res.start).toBe(1);
     expect(res.end).toBe(10);
     expect(res.by).toBe(1);
 });
+/* eslint-disable-next-line quotes */
 test('seq "0 10 2" => {start: 0, end: 10, by: 2}', () => {
-    const res = oper_1.seqOpts("0 10 2");
+    const res = oper_1.seqOpts('0 10 2');
     expect(res.start).toBe(0);
     expect(res.end).toBe(10);
     expect(res.by).toBe(2);

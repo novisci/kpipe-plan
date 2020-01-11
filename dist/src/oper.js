@@ -57,9 +57,11 @@ class Op {
     compile(state) {
         return [[this], state];
     }
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     substitute(state) {
         throw Error('substitute() must be defined in Oper derived classes');
     }
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     execute(state) {
         throw Error(`execute() is undefined for ${this.keyword}`);
     }

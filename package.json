@@ -1,6 +1,6 @@
 {
   "name": "kpipe-plan",
-  "version": "0.1.0",
+  "version": "0.9.1",
   "description": "NoviSci kpipe plan compiler",
   "main": "dist/index.js",
   "scripts": {
@@ -13,7 +13,8 @@
     "lint": "tsc --noEmit && eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "author": "Paul Rowan <prowan@novisci.com>",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": "github:novisci/kpipe-plan",
   "devDependencies": {
     "@babel/parser": "^7.7.3",
     "@babel/types": "^7.7.2",
@@ -24,6 +25,7 @@
     "@typescript-eslint/parser": "^2.11.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
+    "concurrently": "^4.1.2",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-friendly-formatter": "^4.0.1",

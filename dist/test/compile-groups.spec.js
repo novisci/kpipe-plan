@@ -11,15 +11,16 @@ test('plan operation creates plan group', () => {
             ]]
     ];
     // console.error('IN', ops)
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
     // console.error('OUT', cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify(ops));
     // expect(JSON.stringify(cops))
-    //   .toBe(JSON.stringify([ 
+    //   .toBe(JSON.stringify([
     //     [ 'task', 'ferdinand', [ 'arg1', 'arg2', 'Freddo' ] ],
     //     [ 'echo', 'Bull' ],
-    //     [ 'task', 'flowerSmell', [ 'arg1' ] ] 
+    //     [ 'task', 'flowerSmell', [ 'arg1' ] ]
     //   ]))
     // expect(JSON.stringify(state))
     //   .toBe(JSON.stringify({
