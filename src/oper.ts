@@ -32,7 +32,7 @@ const uidgen = new UIDGenerator(32, UIDGenerator.BASE58)
 // -------------------------------------------
 // OP
 // -------------------------------------------
-class Op {
+export class Op {
   readonly keyword: string
   readonly name: string = ''
   readonly options: Props = {}
