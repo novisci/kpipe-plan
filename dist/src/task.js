@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+function serializeTask(t) {
+    return [
+        t.taskId,
+        [t.op, t.cmd, t.args]
+    ];
+}
+exports.serializeTask = serializeTask;
 function emitTasks(tasks, stream) {
     stream.write('[\n');
     tasks.forEach((t, i) => {
-        stream.write('  ' + JSON.stringify([
-            t.taskId,
-            [t.op, t.cmd, t.args]
-        ]));
+        stream.write('  ' + JSON.stringify(serializeTask(t)));
         if (i < tasks.length - 1) {
             stream.write(',');
         }

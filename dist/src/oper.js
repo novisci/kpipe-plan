@@ -66,6 +66,7 @@ class Op {
         throw Error(`execute() is undefined for ${this.keyword}`);
     }
 }
+exports.Op = Op;
 // -------------------------------------------
 function parseLeafArgs(d) {
     return [d[0], {
