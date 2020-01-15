@@ -48,7 +48,7 @@ export const taskId = (state: State): string => `${state.planUid}-${('' + state.
 // }
 
 export const stateFromTaskId = (id: string): { [key: string]: number|string } => {
-  const r = /([a-z0-9]+)-(\d+)-(\d+)-([a-z0-9]+)/
+  const r = /([A-Za-z0-9]+)-(\d+)-(\d+)-([A-Za-z0-9]+)/
   const m = r.exec(id)
   if (!m) {
     throw Error(`"${id}" is not a task id`)
