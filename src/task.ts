@@ -4,7 +4,7 @@ type State = { [key: string]: (string | number) }
 export interface Task {
   readonly taskId: string
   readonly op: string
-  readonly cmd: string|undefined
+  readonly cmd: string
   readonly args: string[]
 }
 
