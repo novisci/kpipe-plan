@@ -356,9 +356,9 @@ class OpDef extends Op {
     super('def', args)
   }
 
-  substitute (/* state: Readonly<State> */): OpDef {
+  substitute (state: Readonly<State>): OpDef {
     return new OpDef({
-      options: this.options // This probably needs substitution
+      options: substitute(this.options, state)
     })
   }
 
@@ -377,10 +377,14 @@ class OpSeq extends Op {
   }
 
   substitute (state: Readonly<State>): OpSeq {
+    // Remove existing "local" vars X and I
+    const seqState = { ...state }
+    delete seqState.X
+    delete seqState.I
     return new OpSeq({
       options: this.options,
-      name: substitute(this.name, state),
-      ops: this.ops.map((o) => o.substitute(state))
+      name: substitute(this.name, seqState),
+      ops: this.ops.map((o) => o.substitute(seqState))
     })
   }
 

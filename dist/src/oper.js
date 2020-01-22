@@ -300,9 +300,9 @@ class OpDef extends Op {
     constructor(args) {
         super('def', args);
     }
-    substitute( /* state: Readonly<State> */) {
+    substitute(state) {
         return new OpDef({
-            options: this.options // This probably needs substitution
+            options: subs_1.substitute(this.options, state)
         });
     }
     compile(state) {
@@ -318,10 +318,14 @@ class OpSeq extends Op {
         super('seq', args);
     }
     substitute(state) {
+        // Remove existing "local" vars X and I
+        const seqState = { ...state };
+        delete seqState.X;
+        delete seqState.I;
         return new OpSeq({
             options: this.options,
-            name: subs_1.substitute(this.name, state),
-            ops: this.ops.map((o) => o.substitute(state))
+            name: subs_1.substitute(this.name, seqState),
+            ops: this.ops.map((o) => o.substitute(seqState))
         });
     }
     compile(state) {
