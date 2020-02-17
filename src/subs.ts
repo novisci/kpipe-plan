@@ -28,7 +28,7 @@ export function substitute (obj: any, vars: Vars, strict = false): any {
     return substituteString(obj, vars, strict)
   }
   if (Array.isArray(obj)) {
-    return obj.map((a) => substitute(a, vars))
+    return obj.map((a) => substitute(a, vars, strict))
   }
   if (typeof obj === 'object') {
     return substituteObject(obj, vars, strict)
