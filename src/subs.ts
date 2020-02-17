@@ -6,7 +6,7 @@ function substituteString (str: string, vars: any, strict = false): string {
       return vars[v]
     }
     if (strict) {
-      throw Error(`Variable "$v" is undefined`)
+      throw Error(`Variable "${v}" is undefined`)
     }
     return m
   })

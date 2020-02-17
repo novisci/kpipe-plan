@@ -8,7 +8,7 @@ function substituteString(str, vars, strict = false) {
             return vars[v];
         }
         if (strict) {
-            throw Error(`Variable "$v" is undefined`);
+            throw Error(`Variable "${v}" is undefined`);
         }
         return m;
     });

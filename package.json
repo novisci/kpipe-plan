@@ -1,6 +1,6 @@
 {
   "name": "kpipe-plan",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "NoviSci kpipe plan compiler",
   "main": "dist/index.js",
   "scripts": {
