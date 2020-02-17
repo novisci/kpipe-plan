@@ -58,7 +58,7 @@ class Op {
         return [[this], state];
     }
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    substitute(state) {
+    substitute(state, strict) {
         throw Error('substitute() must be defined in Oper derived classes');
     }
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
@@ -123,9 +123,9 @@ class OpEcho extends Op {
     constructor(args) {
         super('echo', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         return new OpEcho({
-            name: subs_1.substitute(this.name, state),
+            name: subs_1.substitute(this.name, state, strict),
             options: this.options,
             args: this.args
         });
@@ -150,11 +150,11 @@ class OpTask extends Op {
     constructor(args) {
         super('task', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         return new OpTask({
-            name: subs_1.substitute(this.name, state),
+            name: subs_1.substitute(this.name, state, strict),
             options: this.options,
-            args: subs_1.substitute(this.args, state)
+            args: subs_1.substitute(this.args, state, strict)
         });
     }
     execute(state) {
@@ -177,11 +177,11 @@ class OpExec extends Op {
     constructor(args) {
         super('exec', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         return new OpExec({
-            name: subs_1.substitute(this.name, state),
+            name: subs_1.substitute(this.name, state, strict),
             options: this.options,
-            args: subs_1.substitute(this.args, state)
+            args: subs_1.substitute(this.args, state, strict)
         });
     }
     execute(state) {
@@ -204,11 +204,11 @@ class OpSpread extends Op {
     constructor(args) {
         super('spread', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         return new OpSpread({
             name: this.name,
             options: this.options,
-            ops: this.ops.map((o) => o.substitute(state))
+            ops: this.ops.map((o) => o.substitute(state, strict))
         });
     }
     compile(state) {
@@ -231,11 +231,11 @@ class OpStage extends Op {
     constructor(args) {
         super('stage', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         return new OpStage({
             name: this.name,
             options: this.options,
-            ops: this.ops.map((o) => o.substitute(state))
+            ops: this.ops.map((o) => o.substitute(state, strict))
         });
     }
     compile(state) {
@@ -271,10 +271,10 @@ class OpPlan extends Op {
     constructor(args) {
         super('plan', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         return new OpPlan({
             name: this.name,
-            ops: this.ops.map((o) => o.substitute(state))
+            ops: this.ops.map((o) => o.substitute(state, strict))
         });
     }
     compile(state) {
@@ -300,9 +300,9 @@ class OpDef extends Op {
     constructor(args) {
         super('def', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         return new OpDef({
-            options: subs_1.substitute(this.options, state)
+            options: subs_1.substitute(this.options, state, strict)
         });
     }
     compile(state) {
@@ -317,15 +317,15 @@ class OpSeq extends Op {
     constructor(args) {
         super('seq', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         // Remove existing "local" vars X and I
         const seqState = { ...state };
         delete seqState.X;
         delete seqState.I;
         return new OpSeq({
             options: this.options,
-            name: subs_1.substitute(this.name, seqState),
-            ops: this.ops.map((o) => o.substitute(seqState))
+            name: subs_1.substitute(this.name, seqState, strict),
+            ops: this.ops.map((o) => o.substitute(seqState, strict))
         });
     }
     compile(state) {
@@ -392,10 +392,10 @@ class OpWith extends Op {
     constructor(args) {
         super('with', args);
     }
-    substitute(state) {
+    substitute(state, strict) {
         return new OpWith({
-            options: subs_1.substitute(this.options, state),
-            ops: this.ops.map((o) => o.substitute(state))
+            options: subs_1.substitute(this.options, state, strict),
+            ops: this.ops.map((o) => o.substitute(state, strict))
         });
     }
     compile(state) {
@@ -431,7 +431,7 @@ function compileOps(ops, state) {
     let compiled = [];
     let withState = state;
     ops.forEach((o) => {
-        const [cops, ste] = o.substitute(withState).compile(withState);
+        const [cops, ste] = o.substitute(withState, false).compile(withState);
         compiled = compiled.concat(cops);
         withState = ste;
     });
@@ -443,7 +443,7 @@ function executeOps(ops, state) {
     let executed = [];
     let withState = { ...state };
     ops.forEach((o) => {
-        const [ops, ste] = o.substitute(withState).execute(withState);
+        const [ops, ste] = o.substitute(withState, true).execute(withState);
         executed = executed.concat(ops);
         withState = ste;
     });

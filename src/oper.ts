@@ -80,7 +80,7 @@ export class Op {
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  substitute (state: Readonly<State>): Op {
+  substitute (state: Readonly<State>, strict: boolean): Op {
     throw Error('substitute() must be defined in Oper derived classes')
   }
 
@@ -151,9 +151,9 @@ class OpEcho extends Op {
     super('echo', args)
   }
 
-  substitute (state: Readonly<State>): OpEcho {
+  substitute (state: Readonly<State>, strict: boolean): OpEcho {
     return new OpEcho({
-      name: substitute(this.name, state),
+      name: substitute(this.name, state, strict),
       options: this.options,
       args: this.args
     })
@@ -182,11 +182,11 @@ class OpTask extends Op {
     super('task', args)
   }
 
-  substitute (state: Readonly<State>): OpTask {
+  substitute (state: Readonly<State>, strict: boolean): OpTask {
     return new OpTask({
-      name: substitute(this.name, state),
+      name: substitute(this.name, state, strict),
       options: this.options,
-      args: substitute(this.args, state)
+      args: substitute(this.args, state, strict)
     })
   }
 
@@ -213,11 +213,11 @@ class OpExec extends Op {
     super('exec', args)
   }
 
-  substitute (state: Readonly<State>): OpExec {
+  substitute (state: Readonly<State>, strict: boolean): OpExec {
     return new OpExec({
-      name: substitute(this.name, state),
+      name: substitute(this.name, state, strict),
       options: this.options,
-      args: substitute(this.args, state)
+      args: substitute(this.args, state, strict)
     })
   }
 
@@ -244,11 +244,11 @@ class OpSpread extends Op {
     super('spread', args)
   }
 
-  substitute (state: Readonly<State>): OpSpread {
+  substitute (state: Readonly<State>, strict: boolean): OpSpread {
     return new OpSpread({
       name: this.name,
       options: this.options,
-      ops: this.ops.map((o) => o.substitute(state))
+      ops: this.ops.map((o) => o.substitute(state, strict))
     })
   }
 
@@ -275,11 +275,11 @@ class OpStage extends Op {
     super('stage', args)
   }
 
-  substitute (state: Readonly<State>): OpStage {
+  substitute (state: Readonly<State>, strict: boolean): OpStage {
     return new OpStage({
       name: this.name,
       options: this.options,
-      ops: this.ops.map((o) => o.substitute(state))
+      ops: this.ops.map((o) => o.substitute(state, strict))
     })
   }
 
@@ -322,10 +322,10 @@ class OpPlan extends Op {
     super('plan', args)
   }
 
-  substitute (state: Readonly<State>): OpPlan {
+  substitute (state: Readonly<State>, strict: boolean): OpPlan {
     return new OpPlan({
       name: this.name,
-      ops: this.ops.map((o) => o.substitute(state))
+      ops: this.ops.map((o) => o.substitute(state, strict))
     })
   }
 
@@ -356,9 +356,9 @@ class OpDef extends Op {
     super('def', args)
   }
 
-  substitute (state: Readonly<State>): OpDef {
+  substitute (state: Readonly<State>, strict: boolean): OpDef {
     return new OpDef({
-      options: substitute(this.options, state)
+      options: substitute(this.options, state, strict)
     })
   }
 
@@ -376,15 +376,15 @@ class OpSeq extends Op {
     super('seq', args)
   }
 
-  substitute (state: Readonly<State>): OpSeq {
+  substitute (state: Readonly<State>, strict: boolean): OpSeq {
     // Remove existing "local" vars X and I
     const seqState = { ...state }
     delete seqState.X
     delete seqState.I
     return new OpSeq({
       options: this.options,
-      name: substitute(this.name, seqState),
-      ops: this.ops.map((o) => o.substitute(seqState))
+      name: substitute(this.name, seqState, strict),
+      ops: this.ops.map((o) => o.substitute(seqState, strict))
     })
   }
 
@@ -454,10 +454,10 @@ class OpWith extends Op {
     super('with', args)
   }
 
-  substitute (state: Readonly<State>): OpWith {
+  substitute (state: Readonly<State>, strict: boolean): OpWith {
     return new OpWith({
-      options: substitute(this.options, state),
-      ops: this.ops.map((o) => o.substitute(state))
+      options: substitute(this.options, state, strict),
+      ops: this.ops.map((o) => o.substitute(state, strict))
     })
   }
 
@@ -497,7 +497,7 @@ export function compileOps (ops: Op[], state: Readonly<State>): Result {
   let compiled: Op[] = []
   let withState: State = state
   ops.forEach((o) => {
-    const [cops, ste] = o.substitute(withState).compile(withState)
+    const [cops, ste] = o.substitute(withState, false).compile(withState)
     compiled = compiled.concat(cops)
     withState = ste
   })
@@ -509,7 +509,7 @@ export function executeOps (ops: Op[], state: Readonly<State>): ExecResult {
   let executed: Task[] = []
   let withState = { ...state }
   ops.forEach((o) => {
-    const [ops, ste] = o.substitute(withState).execute(withState)
+    const [ops, ste] = o.substitute(withState, true).execute(withState)
     executed = executed.concat(ops)
     withState = ste
   })
