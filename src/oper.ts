@@ -491,7 +491,7 @@ class OpWith extends Op {
       loopDef = this.options
     }
 
-    console.error('LOOPDEF', loopDef)
+    console.debug('WITH', loopDef)
 
     // Determine length of longest array
     const maxIdx = Object.values(loopDef).reduce((a: number, c) => Math.max(a, (c as unknown[]).length), 0)
@@ -557,7 +557,7 @@ export function compileOps (ops: Op[], state: Readonly<State>): Result {
     const [cops, ste] = o.substitute(withState, false).compile(withState)
     compiled = compiled.concat(cops)
     withState = ste
-    console.error(withState)
+    console.debug(withState)
   })
   return [compiled, withState]
 }
