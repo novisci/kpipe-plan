@@ -1,0 +1,8 @@
+[
+  ["stage", "Included stage", [
+    ["def", {
+      "ARG1": "${PARAM1}"
+    }],
+    ["echo", "${ARG1}"]
+  ]]
+]

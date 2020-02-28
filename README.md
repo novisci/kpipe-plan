@@ -171,9 +171,12 @@ That is, before a stage may begin execution, all previous stages must have succe
 ]
 ```
 
-## Topic Mapping
+### `include`
+An include statement will insert the contents of an external JSON file into the plan. 
 
-Topics
-- Plan 
-- Stage
-- Task
+```json
+[
+  "include", "relative/path/to/file"  
+]
+```
+

@@ -4,7 +4,7 @@ import { taskId, Task } from './task'
 // -------------------------------------------
 const runOpKeywords = ['echo', 'task', 'exec']
 const compileOpKeywords = ['spread', 'stage', 'plan']
-const macroOpKeywords = ['def', 'seq', 'with']
+const macroOpKeywords = ['def', 'seq', 'with', 'include']
 export const opKeywords = [...runOpKeywords, ...compileOpKeywords, ...macroOpKeywords]
 
 type Props = { [key: string]: (string | number | string[] | number[]) }
@@ -118,6 +118,7 @@ function parseOpInit (d: OpData): OpInit {
     case 'def': return parseLeafArgs(d)
     case 'seq': return parseNodeArgs(d)
     case 'with': return parseNodeArgs(d)
+    case 'include': return parseNodeArgs(d)
     default:
       throw Error(`Unknown keyword "${d[0]}" in parseOpInit`)
   }
@@ -134,6 +135,7 @@ function createOp (d: OpInit): Op {
     case 'def': return new OpDef(d[1])
     case 'seq': return new OpSeq(d[1])
     case 'with': return new OpWith(d[1])
+    case 'include': return new OpInclude(d[1])
     default:
       throw Error(`Unknown keyword "${d[0]}" in parseOpInit`)
   }
@@ -489,6 +491,30 @@ class OpWith extends Op {
     }
 
     return [compiled, state]
+  }
+}
+
+// -------------------------------------------
+// INCLUDE
+// -------------------------------------------
+class OpInclude extends Op {
+  constructor (args: OpInitData) {
+    super('include', args)
+  }
+
+  substitute (state: Readonly<State>, strict: boolean): OpInclude {
+    return new OpInclude({
+      options: substitute(this.options, state, strict),
+      name: substitute(this.name, state, strict)
+    })
+  }
+
+  compile (state: Readonly<State>): Result {
+    // Load external json file
+    const path = this.name.replace(/\.json$/i, '')
+    const ext = JSON.parse(require('fs').readFileSync(`${path}.json`))
+
+    return compileOps(parseOps(ext), state)
   }
 }
 

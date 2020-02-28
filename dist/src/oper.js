@@ -5,7 +5,7 @@ const task_1 = require("./task");
 // -------------------------------------------
 const runOpKeywords = ['echo', 'task', 'exec'];
 const compileOpKeywords = ['spread', 'stage', 'plan'];
-const macroOpKeywords = ['def', 'seq', 'with'];
+const macroOpKeywords = ['def', 'seq', 'with', 'include'];
 exports.opKeywords = [...runOpKeywords, ...compileOpKeywords, ...macroOpKeywords];
 // -------------------------------------------
 const UIDGenerator = require('uid-generator');
@@ -93,6 +93,7 @@ function parseOpInit(d) {
         case 'def': return parseLeafArgs(d);
         case 'seq': return parseNodeArgs(d);
         case 'with': return parseNodeArgs(d);
+        case 'include': return parseNodeArgs(d);
         default:
             throw Error(`Unknown keyword "${d[0]}" in parseOpInit`);
     }
@@ -108,6 +109,7 @@ function createOp(d) {
         case 'def': return new OpDef(d[1]);
         case 'seq': return new OpSeq(d[1]);
         case 'with': return new OpWith(d[1]);
+        case 'include': return new OpInclude(d[1]);
         default:
             throw Error(`Unknown keyword "${d[0]}" in parseOpInit`);
     }
@@ -424,6 +426,26 @@ class OpWith extends Op {
             }
         }
         return [compiled, state];
+    }
+}
+// -------------------------------------------
+// INCLUDE
+// -------------------------------------------
+class OpInclude extends Op {
+    constructor(args) {
+        super('include', args);
+    }
+    substitute(state, strict) {
+        return new OpInclude({
+            options: subs_1.substitute(this.options, state, strict),
+            name: subs_1.substitute(this.name, state, strict)
+        });
+    }
+    compile(state) {
+        // Load external json file
+        const path = this.name.replace(/\.json$/i, '');
+        const ext = JSON.parse(require('fs').readFileSync(`${path}.json`));
+        return compileOps(parseOps(ext), state);
     }
 }
 // -------------------------------------------
