@@ -423,7 +423,7 @@ class OpWith extends Op {
         if (!loopDef) {
             loopDef = this.options;
         }
-        console.error('LOOPDEF', loopDef);
+        console.debug('LOOPDEF', loopDef);
         // Determine length of longest array
         const maxIdx = Object.values(loopDef).reduce((a, c) => Math.max(a, c.length), 0);
         // If sub-operations are present, compile them
@@ -481,7 +481,7 @@ function compileOps(ops, state) {
         const [cops, ste] = o.substitute(withState, false).compile(withState);
         compiled = compiled.concat(cops);
         withState = ste;
-        console.error(withState);
+        console.debug(withState);
     });
     return [compiled, withState];
 }
