@@ -13,7 +13,7 @@ function substituteString (str: string, vars: any, strict = false): string {
 }
 
 type Props = { [key: string]: (string | number | string[] | number[]) }
-type Vars = { [key: string]: (string | number) }
+type Vars = { [key: string]: (string | number | {}) }
 
 function substituteObject (obj: Props, vars: Vars, strict = false): Props {
   const sobj: Props = {}

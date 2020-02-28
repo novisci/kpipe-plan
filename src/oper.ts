@@ -8,7 +8,7 @@ const macroOpKeywords = ['def', 'seq', 'with', 'include']
 export const opKeywords = [...runOpKeywords, ...compileOpKeywords, ...macroOpKeywords]
 
 type Props = { [key: string]: (string | number | string[] | number[]) }
-type State = { [key: string]: (string | number) }
+type State = { [key: string]: (string | number | Props) }
 type Result = [ Op[], State ]
 type ExecResult = [ Task[], State ]
 
@@ -458,6 +458,7 @@ class OpWith extends Op {
 
   substitute (state: Readonly<State>, strict: boolean): OpWith {
     return new OpWith({
+      name: this.name,
       options: substitute(this.options, state, strict),
       ops: this.ops.map((o) => o.substitute(state, strict))
     })
@@ -465,32 +466,62 @@ class OpWith extends Op {
 
   compile (state: Readonly<State>): Result {
     let compiled: Op[] = []
+    const hasOpts = Object.values(this.options).length > 0
 
-    let n = 0
-    Object.values(this.options).map((v) => {
-      if (!Array.isArray(v)) {
-        throw Error('with operation expects an options object with only array values')
-      }
-      n = Math.max(n, v.length)
-    })
-
-    let i = 0
-    for (i = 0; i < n; i++) {
-      const withState: State = Object.assign({}, state)
-      Object.entries(this.options).map((e) => {
-        if (Array.isArray(e[1])) {
-          withState[e[0]] = e[1][i % e[1].length]
-        } else {
-          withState[e[0]] = e[1]
+    // Validate any supplied loop definitions
+    if (hasOpts) {
+      Object.values(this.options).map((v) => {
+        if (!Array.isArray(v)) {
+          throw Error('with operation expects an options object with only array values')
         }
       })
-      const [cops] = compileOps(this.ops, withState) // Note: dumps state?
-      if (cops.length > 0) {
-        compiled = compiled.concat(cops)
+    }
+
+    // If a name is specified, read it's current value from state
+    let loopDef: Props | null = null
+    if (this.name) {
+      loopDef = state[this.name] as Props
+    }
+
+    if (!loopDef && !hasOpts) {
+      throw Error('Named with operation has undefined label and no loop definition')
+    }
+
+    if (!loopDef) {
+      loopDef = this.options
+    }
+
+    console.error('LOOPDEF', loopDef)
+
+    // Determine length of longest array
+    const maxIdx = Object.values(loopDef).reduce((a: number, c) => Math.max(a, (c as unknown[]).length), 0)
+
+    // If sub-operations are present, compile them
+    if (this.ops.length > 0) {
+      let i = 0
+      for (i = 0; i < maxIdx; i++) {
+        const withState: State = Object.assign({}, state)
+        Object.entries(loopDef).map((e) => {
+          if (Array.isArray(e[1])) {
+            withState[e[0]] = e[1][i % e[1].length]
+          } else {
+            withState[e[0]] = e[1]
+          }
+        })
+        const [cops] = compileOps(this.ops, withState) // Note: dumps state?
+        if (cops.length > 0) {
+          compiled = compiled.concat(cops)
+        }
       }
     }
 
-    return [compiled, state]
+    // Update the labeled loop definition in the state
+    const newState = { ...state }
+    if (this.name) {
+      newState[this.name] = { ...loopDef }
+    }
+
+    return [compiled, newState]
   }
 }
 
@@ -526,6 +557,7 @@ export function compileOps (ops: Op[], state: Readonly<State>): Result {
     const [cops, ste] = o.substitute(withState, false).compile(withState)
     compiled = compiled.concat(cops)
     withState = ste
+    console.error(withState)
   })
   return [compiled, withState]
 }
@@ -542,22 +574,40 @@ export function executeOps (ops: Op[], state: Readonly<State>): ExecResult {
   return [executed, withState]
 }
 
+// Just for reference
+type Op2 = [string, string | {} | Array<unknown>]
+type Op3 = [string, string | {}, {} | Array<unknown>]
+type Op4 = [string, string, {}, Array<unknown>]
+
 // -------------------------------------------
 function preParse (op: any[]): OpData {
-  if (!Array.isArray(op) || op.length < 2 || op.length > 3) {
-    throw Error('Oper parse data must be an array with 2 or 3 elements')
+  if (!Array.isArray(op) || op.length < 2 || op.length > 4) {
+    throw Error('Oper parse data must be an array with 2 to 4 elements')
   }
   if (typeof op[0] !== 'string' || !opKeywords.includes(op[0])) {
     throw Error(`First element of oper parse data must ba a keyword string. Received "${op[0]}`)
   }
-  if (op.length === 3 && !Array.isArray(op[2])) {
-    throw Error('Third element of oper parse data must be an array')
-  }
   if (typeof op[1] !== 'string' && typeof op[1] !== 'object' && !Array.isArray(op[1])) {
     throw Error('Second element of oper parse data must be a string, object, or array')
   }
-  if (Array.isArray(op[1]) && op.length === 3) {
-    throw Error('Array element of oper parse data must be the last element')
+  if (op.length === 3) {
+    if (Array.isArray(op[1])) {
+      throw Error('Second element must be string or object')
+    }
+    if (!Array.isArray(op[2]) && typeof op[2] !== 'object') {
+      throw Error('Third element of oper parse data must be an array or object')
+    }
+  }
+  if (op.length === 4) {
+    if (typeof op[1] !== 'string') {
+      throw Error('Second element must be a string')
+    }
+    if (typeof op[2] !== 'object') {
+      throw Error('Third element must be an object')
+    }
+    if (!Array.isArray(op[3])) {
+      throw Error('Fourth element must be an array')
+    }
   }
 
   let name = ''

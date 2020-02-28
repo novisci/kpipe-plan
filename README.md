@@ -1,12 +1,13 @@
 # `kpipe` Plan Compiler
 
 ## Basics
-A similar structure is used for all items found in a set of kpipe operations. Some arguments are optional and/or inferred by their position. The three forms of an operation are:
+A similar structure is used for all items found in a set of kpipe operations. Some arguments are optional and/or inferred by their position. The valid forms of an operation are:
 
 ```json
-[ "OP", "STRING", ([...ARGS])]
-[ "OP", {...OPTS}, ([...ARGS])]
-[ "OP", [...ARGS]]
+[ "OPCODE", [...OPS]]
+[ "OPCODE", "STRING", ([...OPS])]
+[ "OPCODE", {...DEF}, ([...OPS])]
+[ "OPCODE", "STRING", {...DEF}, ([...OPS])]
 ```
 
 String substitution is performed on all string values when the operation is invoked. An immutable state object is presented when the operation is parsed and invoked. Variables can be declared using a "def" operation and those variables will be presented to all subsequent operations and their children.
@@ -91,6 +92,60 @@ a set of tasks are repeated for each of the provided iterations
 ]
 ```
 
+This gets transformed into:
+```json
+[
+  ["task", "tasks/convertFile", ["path/to/files/file+001.csv"]],
+  ["task", "tasks/convertFile", ["path/to/files/file+002.csv"]],
+  ["task", "tasks/convertFile", ["path/to/files/file+003.csv"]]
+]
+```
+_new in v0.9.11_
+
+
+A _with_ can specify a _name_. A named _with_ can be referred to in subsequent _with_ statements which will re-use the definition from earlier. This serves as a mechanism to lift the sequence arrays out of inner loops of tasks and avoid restatements of the with definitions. A named _with_ is maintained in the state when compiling the ops list, so it can be referred to inside dependent (externally defined) sub-plans.
+
+_Note: Since the with definition is maintained as part of the compile state, its label must not interfere with other state variables used by the plan_
+
+```json
+[
+  "with",  "FILEPARTS" {
+    "PART": ["001", "002", "003"]
+  }, [
+    ["task", "tasks/convertFile", ["path/to/files/file+${PART}.csv"]]
+  ]
+]
+...
+[
+  "with", "FILEPARTS", [
+    ["task", "tasks/convertFile", ["path/to/otherfiles/file+${PART}.csv"]]
+  ]
+]
+```
+This gets transformed into:
+```json
+[
+  ["task", "tasks/convertFile", ["path/to/files/file+001.csv"]],
+  ["task", "tasks/convertFile", ["path/to/files/file+002.csv"]],
+  ["task", "tasks/convertFile", ["path/to/files/file+003.csv"]],
+  ...
+  ["task", "tasks/convertFile", ["path/to/otherfiles/file+001.csv"]],
+  ["task", "tasks/convertFile", ["path/to/otherfiles/file+002.csv"]],
+  ["task", "tasks/convertFile", ["path/to/otherfiles/file+003.csv"]]
+]
+```
+An empty named _with_ is valid. This will set the definition to the labeled variable, but will generate no sub-tasks.
+```json
+[
+  ["with", "FILEPARTS", {
+    "PART": ["001", "002", "003"]
+  }],
+  ...
+  ["with", "FILEPARTS", [
+    ["task", "tasks/convertFile", ["path/to/files/file+${PART}.csv"]]
+  ]]
+]
+```
 This gets transformed into:
 ```json
 [
