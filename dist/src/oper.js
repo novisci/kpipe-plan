@@ -5,7 +5,7 @@ const task_1 = require("./task");
 // -------------------------------------------
 const runOpKeywords = ['echo', 'task', 'exec'];
 const compileOpKeywords = ['spread', 'stage', 'plan'];
-const macroOpKeywords = ['def', 'seq', 'with', 'include'];
+const macroOpKeywords = ['def', 'seq', 'with', 'include', 'pipeline', 'pipe'];
 exports.opKeywords = [...runOpKeywords, ...compileOpKeywords, ...macroOpKeywords];
 // -------------------------------------------
 const UIDGenerator = require('uid-generator');
@@ -23,9 +23,11 @@ class Op {
         if (init.name) {
             this.name = init.name;
         }
+        // console.error(util.inspect(init.options, false, null, true /* enable colors */))
         if (init.options) {
-            this.options = { ...init.options };
+            this.options = init.options;
         }
+        // console.error(util.inspect(this.options, false, null, true /* enable colors */))
         if (init.args) {
             this.args = [...init.args];
         }
@@ -82,6 +84,21 @@ function parseNodeArgs(d) {
             ops: parseOps(d[1][2])
         }];
 }
+function parsePipeArgs(d) {
+    const options = { ...d[1][1] };
+    if (options.pre) {
+        options.pre = parseOps(options.pre);
+    }
+    if (options.post) {
+        options.post = parseOps(options.post);
+    }
+    // console.error(util.inspect(options, false, null, true /* enable colors */))
+    return [d[0], {
+            name: d[1][0],
+            options,
+            ops: parseOps(d[1][2])
+        }];
+}
 function parseOpInit(d) {
     switch (d[0]) {
         case 'echo': return parseLeafArgs(d);
@@ -94,6 +111,8 @@ function parseOpInit(d) {
         case 'seq': return parseNodeArgs(d);
         case 'with': return parseNodeArgs(d);
         case 'include': return parseNodeArgs(d);
+        case 'pipeline': return parseNodeArgs(d);
+        case 'pipe': return parsePipeArgs(d);
         default:
             throw Error(`Unknown keyword "${d[0]}" in parseOpInit`);
     }
@@ -110,6 +129,8 @@ function createOp(d) {
         case 'seq': return new OpSeq(d[1]);
         case 'with': return new OpWith(d[1]);
         case 'include': return new OpInclude(d[1]);
+        case 'pipeline': return new OpPipeline(d[1]);
+        case 'pipe': return new OpPipe(d[1]);
         default:
             throw Error(`Unknown keyword "${d[0]}" in parseOpInit`);
     }
@@ -423,7 +444,7 @@ class OpWith extends Op {
         if (!loopDef) {
             loopDef = this.options;
         }
-        console.debug('WITH', loopDef);
+        // console.debug('WITH', loopDef)
         // Determine length of longest array
         const maxIdx = Object.values(loopDef).reduce((a, c) => Math.max(a, c.length), 0);
         // If sub-operations are present, compile them
@@ -474,6 +495,151 @@ class OpInclude extends Op {
     }
 }
 // -------------------------------------------
+// PIPELINE
+// -------------------------------------------
+function stringOrNumber(val, def) {
+    if (typeof val === 'number') {
+        return val;
+    }
+    else if (typeof val === 'string') {
+        return parseInt(val, 10);
+    }
+    return def;
+}
+class OpPipeline extends Op {
+    constructor(args) {
+        super('pipeline', args);
+    }
+    substitute(state, strict) {
+        return new OpPipeline({
+            options: subs_1.substitute(this.options, state, strict),
+            name: subs_1.substitute(this.name, state, strict),
+            ops: this.ops.map((o) => o.substitute(state, strict))
+        });
+    }
+    compile(state) {
+        const compiled = [];
+        this.ops.forEach((o) => {
+            if (o.keyword !== 'pipe') {
+                throw Error('OpPipeline must contain a list of OpPipe operations');
+            }
+        });
+        const concurrency = Math.max(stringOrNumber(this.options.concurrency, 1), 1);
+        const depth = Math.max(stringOrNumber(this.options.depth, 1), 1);
+        const pipes = this.ops.length;
+        const cSteps = [];
+        let tempOps = [];
+        // Compile all pipes for each value of depth
+        for (let i = 0; i < depth; i++) {
+            const pipeState = Object.assign({}, state, {
+                P_X: ('' + i).padStart(5, '0'),
+                P_I: i
+            });
+            const cPipes = [];
+            // console.error(util.inspect(this, false, null, true /* enable colors */))
+            this.ops.forEach((o) => {
+                // console.error(util.inspect(o, false, null, true /* enable colors */))
+                let pre = [];
+                if (Array.isArray(o.options.pre)) {
+                    [pre] = compileOps(o.options.pre, pipeState);
+                }
+                let post = [];
+                if (Array.isArray(o.options.pre)) {
+                    [post] = compileOps(o.options.pre, pipeState);
+                }
+                const [spread] = compileOps(o.ops, pipeState);
+                tempOps = tempOps.concat(spread);
+                cPipes.push({
+                    pre,
+                    post,
+                    spread
+                });
+            });
+            cSteps.push(cPipes);
+        }
+        // Arrange into the sequenced pipeline
+        const pipeline = [];
+        cSteps.forEach((s, i) => {
+            const loc = pipes * i / concurrency;
+            s.forEach((t, j) => {
+                const idx = loc + j + i % pipes;
+                if (!pipeline[idx]) {
+                    pipeline[idx] = [];
+                }
+                pipeline[idx].push(t);
+            });
+        });
+        // const pre: Op[][] = []
+        // const post: Op[][] = []
+        // const spread: Op[][] = []
+        // this.ops.forEach((o) => {
+        //   if (Array.isArray(o.options.pre)) {
+        //     pre.push(o.options.pre as Op[])
+        //   } else {
+        //     pre.push([])
+        //   }
+        //   if (Array.isArray(o.options.post)) {
+        //     post.push(o.options.post as Op[])
+        //   } else {
+        //     post.push([])
+        //   }
+        //   spread.push([...o.ops])
+        // })
+        // const steps = depth + (concurrency - 1)
+        // const steps = []
+        // const nsteps = Math.ceil(depth / concurrency) * pipes
+        // for (let n = 0; n < nsteps; n++) {
+        //   const step = []
+        //   for (let i = 0; i < concurrency; i++) {
+        //     for (let j = 0; j < pipes; j++) {
+        //       const idx = n * pipes
+        //       const p =
+        //       if (idx > 0 && idx < this.ops.length) {
+        //         step.push(this.ops[])
+        //       }
+        //     }
+        //   }
+        // }
+        // let i
+        // for (i = start; i <= end; i += by) {
+        //   const withState = Object.assign({}, state, {
+        //     P_X: ('' + i).padStart(5, '0'),
+        //     P_I: i
+        //   })
+        //   const [cops] = compileOps(this.ops, withState) // Note: dumps state?
+        //   if (cops.length > 0) {
+        //     compiled = compiled.concat(cops)
+        //   }
+        // }
+        return [tempOps, state];
+    }
+}
+// -------------------------------------------
+// PIPE
+// -------------------------------------------
+class OpPipe extends Op {
+    constructor(args) {
+        super('pipe', args);
+    }
+    substitute(state, strict) {
+        return new OpPipe({
+            options: subs_1.substitute(this.options, state, strict),
+            name: subs_1.substitute(this.name, state, strict),
+            ops: this.ops.map((o) => o.substitute(state, strict))
+        });
+    }
+    compile(state) {
+        const [cops, ste] = compileOps(this.ops, state);
+        // console.error(util.inspect(cops, false, null, true /* enable colors */))
+        // console.error(util.inspect(this.options, false, null, true /* enable colors */))
+        return [[new OpPipe({
+                    name: this.name,
+                    options: this.options,
+                    ops: cops
+                })], ste];
+    }
+}
+// -------------------------------------------
 function compileOps(ops, state) {
     let compiled = [];
     let withState = state;
@@ -481,7 +647,7 @@ function compileOps(ops, state) {
         const [cops, ste] = o.substitute(withState, false).compile(withState);
         compiled = compiled.concat(cops);
         withState = ste;
-        console.debug(withState);
+        // console.debug(withState)
     });
     return [compiled, withState];
 }
@@ -498,6 +664,10 @@ function executeOps(ops, state) {
     return [executed, withState];
 }
 exports.executeOps = executeOps;
+// Just for reference
+// type Op2 = [string, string | {} | Array<unknown>]
+// type Op3 = [string, string | {}, {} | Array<unknown>]
+// type Op4 = [string, string, {}, Array<unknown>]
 // -------------------------------------------
 function preParse(op) {
     if (!Array.isArray(op) || op.length < 2 || op.length > 4) {

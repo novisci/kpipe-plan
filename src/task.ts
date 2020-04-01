@@ -1,4 +1,7 @@
-type State = { [key: string]: (string | number) }
+// declare class Op {}
+// type Props = { [key: string]: (string | number | string[] | number[] | Op[]) }
+type Props = { [key: string]: any}
+type State = { [key: string]: (string | number | Props) }
 
 // -------------------------------------------
 export interface Task {
@@ -30,7 +33,7 @@ export function emitTasks (tasks: Task[], stream: any): void {
 }
 
 // export const taskId = (state: State) => `${state.planUid}-${('' + state.stageIdx).padStart(2, '0')}-${state.stageUid}-${('' + state.stepIdx).padStart(2, '0')}-${state.taskUid}`
-export const taskId = (state: State): string => `${state.planUid}-${('' + state.stageIdx).padStart(2, '0')}-${('' + state.stepIdx).padStart(2, '0')}-${state.taskUid}`
+export const taskId = (state: Readonly<State>): string => `${state.planUid}-${('' + state.stageIdx).padStart(2, '0')}-${('' + state.stepIdx).padStart(2, '0')}-${state.taskUid}`
 
 // export const stateFromTaskId = (id: string) => {
 //   let r = /([a-z0-9]+)-(\d+)-([a-z0-9]+)-(\d+)-([a-z0-9]+)/
