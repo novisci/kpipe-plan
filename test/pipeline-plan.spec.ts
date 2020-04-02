@@ -1,4 +1,4 @@
-import { compileOps, parseOps } from '../src/oper'
+import { compileOps, parseOps } from '..'
 
 test('compile plan with pipeline', () => {
   const ops = JSON.parse(require('fs').readFileSync('./test/pipeline-plan.json'))

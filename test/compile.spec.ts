@@ -1,4 +1,5 @@
-import { compileOps, parseOps, seqOpts } from '../src/oper'
+import { compileOps, parseOps } from '..'
+import { seqOpts } from '../src/ops/seq'
 
 const testCompile = (ops: any[]): void => {
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */

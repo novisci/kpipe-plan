@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const oper_1 = require("../src/oper");
+const __1 = require("..");
 test('compile from JSON file', () => {
     const ops = JSON.parse(require('fs').readFileSync('./test/named-with.json'));
     // console.error('IN', ...ops)
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
+    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
     // cops[0].forEach((o) => o.forEach((so) => console.error(JSON.stringify(so))))
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([
