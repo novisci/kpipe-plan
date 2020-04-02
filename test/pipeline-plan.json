@@ -1,31 +1,41 @@
 [
-  ["pipeline", {
-    "concurrency": 5,
-    "depth": 10
-  }, [
-    ["pipe", {
-      "pre": [["echo", "pipe 0 - pre ${P_X}"]],
-      "post": [["echo", "pipe 0 - post ${P_X}"]]
-    }, [
-      ["echo", "pipe 0 - tasks ${P_X}"]
-    ]],
-    ["pipe", {
-      "pre": [["echo", "pipe 1 - pre ${P_X}"]],
-      "post": [["echo", "pipe 1 - post ${P_X}"]]
-    }, [
-      ["echo", "pipe 1 - tasks ${P_X}"]
-    ]],
-    ["pipe", {
-      "pre": [["echo", "pipe 2 - pre ${P_X}"]],
-      "post": [["echo", "pipe 2 - post ${P_X}"]]
-    }, [
-      ["echo", "pipe 2 - tasks ${P_X}"]
-    ]],
-    ["pipe", {
-      "pre": [["echo", "pipe 3 - pre ${P_X}"]],
-      "post": [["echo", "pipe 3 - post ${P_X}"]]
-    }, [
-      ["echo", "pipe 3 - tasks ${P_X}"]
+  ["plan", "Test pipeline", [
+    ["stage", "Pipeline stage", [
+      ["pipeline", {
+        "concurrency": 5,
+        "depth": 10
+      }, [
+        ["pipe", {
+          "pre": [
+            ["echo", "pipe 0 - pre ${P_X}"],
+            ["echo", "pipe 0 - pre 1 ${P_X}"]
+          ],
+          "post": [["echo", "pipe 0 - post ${P_X}"]]
+        }, [
+          ["echo", "pipe 0 - tasks ${P_X}"]
+        ]],
+        ["pipe", {
+          "pre": [["echo", "pipe 1 - pre ${P_X}"]],
+          "post": [["echo", "pipe 1 - post ${P_X}"]]
+        }, [
+          ["echo", "pipe 1 - tasks ${P_X}"]
+        ]],
+        ["pipe", {
+          "pre": [["echo", "pipe 2 - pre ${P_X}"]],
+          "post": [["echo", "pipe 2 - post ${P_X}"]]
+        }, [
+          ["echo", "pipe 2 - tasks ${P_X}"]
+        ]],
+        ["pipe", {
+          "pre": [["echo", "pipe 3 - pre ${P_X}"]],
+          "post": [
+            ["echo", "pipe 3 - post ${P_X}"],
+            ["echo", "pipe 3 - post 1 ${P_X}"]
+          ]
+        }, [
+          ["echo", "pipe 3 - tasks ${P_X}"]
+        ]]
+      ]]
     ]]
   ]]
 ]

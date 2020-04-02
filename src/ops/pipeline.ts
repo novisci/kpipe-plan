@@ -1,6 +1,8 @@
 import { substitute } from '../subs'
 import { Op, OpInitData, State, Result } from '../op'
 import { compileOps } from  '../oper'
+import { OpSpread } from './spread'
+import * as util from 'util'
 
 // -------------------------------------------
 // PIPELINE
@@ -44,9 +46,9 @@ export class OpPipeline extends Op {
       pre: Op[]
       post: Op[]
       spread: Op[]
+      [key: string]: Op[]
     }
     const cSteps: PipeStep[][] = []
-    let tempOps: Op[] = []
 
     // Compile all pipes for each value of depth
     for (let i = 0; i < depth; i++) {
@@ -63,11 +65,10 @@ export class OpPipeline extends Op {
           [pre] = compileOps(o.options.pre, pipeState)
         }
         let post: Op[] = []
-        if (Array.isArray(o.options.pre)) {
-          [post] = compileOps(o.options.pre, pipeState)
+        if (Array.isArray(o.options.post)) {
+          [post] = compileOps(o.options.post, pipeState)
         }
         const [spread] = compileOps(o.ops, pipeState)
-        tempOps = tempOps.concat(spread)
         cPipes.push({
           pre,
           post,
@@ -78,17 +79,76 @@ export class OpPipeline extends Op {
     }
 
     // Arrange into the sequenced pipeline
+    // const pipeline: PipeStep[][] = new Array(depth).fill(null).map(() => new Array(pipes).fill(null).map(() => ({
+    //   pre: [],
+    //   post: [],
+    //   spread: []
+    // })))
     const pipeline: PipeStep[][] = []
     cSteps.forEach((s, i) => {
-      const loc = pipes * i / concurrency
+      const loc = Math.floor(i / concurrency)
       s.forEach((t, j) => {
         const idx = loc + j + i % pipes
+        // console.error(loc)
+        // console.error(idx)
         if (!pipeline[idx]) {
           pipeline[idx] = []
         }
         pipeline[idx].push(t)
       })
     })
+
+    // console.error(util.inspect(pipeline, false, null, true /* enable colors */))
+    function compilePrePost (step: PipeStep[], slot: string) {
+      let slots: Op[][] = []
+      step.forEach((p) => {
+        p[slot].forEach((x, i) => {
+          if (!slots[i]) {
+            slots[i] = []
+          }
+          slots[i].push(x)
+        })
+      })
+      slots.forEach((p) => {
+        compiled.push(new OpSpread({
+          ops: p
+        }))
+      })
+    }
+
+    pipeline.forEach((step) => {
+      // Collect pre
+      compilePrePost(step, 'pre')
+      // let pres: Op[][] = []
+      // step.forEach((p) => {
+      //   p.pre.forEach((x, i) => {
+      //     if (!pres[i]) {
+      //       pres[i] = []
+      //     }
+      //     pres[i].push(x)
+      //   })
+      // })
+      // pres.forEach((p) => {
+      //   compiled.push(new OpSpread({
+      //     ops: p
+      //   }))
+      // })
+      // Collect tasks
+      let tasks: Op[] = []
+      step.forEach((p) => {
+        tasks = tasks.concat(p.spread)
+      })
+      compiled.push(new OpSpread({
+        ops: tasks
+      }))
+      // Collect post
+      compilePrePost(step, 'post')
+      // step.forEach((p) => {
+      //   p.post.forEach((x) => {
+      //     compiled.push(x)
+      //   })
+      // })
+   })
 
     // const pre: Op[][] = []
     // const post: Op[][] = []
@@ -135,6 +195,6 @@ export class OpPipeline extends Op {
     //     compiled = compiled.concat(cops)
     //   }
     // }
-    return [tempOps, state]
+    return [compiled, state]
   }
 }

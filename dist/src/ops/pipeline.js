@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const subs_1 = require("../subs");
 const op_1 = require("../op");
 const oper_1 = require("../oper");
+const spread_1 = require("./spread");
 // -------------------------------------------
 // PIPELINE
 // -------------------------------------------
@@ -37,7 +38,6 @@ class OpPipeline extends op_1.Op {
         const depth = Math.max(stringOrNumber(this.options.depth, 1), 1);
         const pipes = this.ops.length;
         const cSteps = [];
-        let tempOps = [];
         // Compile all pipes for each value of depth
         for (let i = 0; i < depth; i++) {
             const pipeState = Object.assign({}, state, {
@@ -53,11 +53,10 @@ class OpPipeline extends op_1.Op {
                     [pre] = oper_1.compileOps(o.options.pre, pipeState);
                 }
                 let post = [];
-                if (Array.isArray(o.options.pre)) {
-                    [post] = oper_1.compileOps(o.options.pre, pipeState);
+                if (Array.isArray(o.options.post)) {
+                    [post] = oper_1.compileOps(o.options.post, pipeState);
                 }
                 const [spread] = oper_1.compileOps(o.ops, pipeState);
-                tempOps = tempOps.concat(spread);
                 cPipes.push({
                     pre,
                     post,
@@ -67,16 +66,73 @@ class OpPipeline extends op_1.Op {
             cSteps.push(cPipes);
         }
         // Arrange into the sequenced pipeline
+        // const pipeline: PipeStep[][] = new Array(depth).fill(null).map(() => new Array(pipes).fill(null).map(() => ({
+        //   pre: [],
+        //   post: [],
+        //   spread: []
+        // })))
         const pipeline = [];
         cSteps.forEach((s, i) => {
-            const loc = pipes * i / concurrency;
+            const loc = Math.floor(i / concurrency);
             s.forEach((t, j) => {
                 const idx = loc + j + i % pipes;
+                // console.error(loc)
+                // console.error(idx)
                 if (!pipeline[idx]) {
                     pipeline[idx] = [];
                 }
                 pipeline[idx].push(t);
             });
+        });
+        // console.error(util.inspect(pipeline, false, null, true /* enable colors */))
+        function compilePrePost(step, slot) {
+            let slots = [];
+            step.forEach((p) => {
+                p[slot].forEach((x, i) => {
+                    if (!slots[i]) {
+                        slots[i] = [];
+                    }
+                    slots[i].push(x);
+                });
+            });
+            slots.forEach((p) => {
+                compiled.push(new spread_1.OpSpread({
+                    ops: p
+                }));
+            });
+        }
+        pipeline.forEach((step) => {
+            // Collect pre
+            compilePrePost(step, 'pre');
+            // let pres: Op[][] = []
+            // step.forEach((p) => {
+            //   p.pre.forEach((x, i) => {
+            //     if (!pres[i]) {
+            //       pres[i] = []
+            //     }
+            //     pres[i].push(x)
+            //   })
+            // })
+            // pres.forEach((p) => {
+            //   compiled.push(new OpSpread({
+            //     ops: p
+            //   }))
+            // })
+            // Collect tasks
+            let tasks = [];
+            step.forEach((p) => {
+                tasks = tasks.concat(p.spread);
+            });
+            compiled.push(new spread_1.OpSpread({
+                ops: tasks
+            }));
+            // Collect post
+            compilePrePost(step, 'post');
+            // step.forEach((p) => {
+            //   p.post.forEach((x) => {
+            //     compiled.push(x)
+            //   })
+            // })
         });
         // const pre: Op[][] = []
         // const post: Op[][] = []
@@ -120,7 +176,7 @@ class OpPipeline extends op_1.Op {
         //     compiled = compiled.concat(cops)
         //   }
         // }
-        return [tempOps, state];
+        return [compiled, state];
     }
 }
 exports.OpPipeline = OpPipeline;
