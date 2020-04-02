@@ -85,7 +85,7 @@ class OpPipeline extends op_1.Op {
             });
         });
         // console.error(util.inspect(pipeline, false, null, true /* enable colors */))
-        function compilePrePost(step, slot) {
+        function compilePrePost(step, slot, idx) {
             let slots = [];
             step.forEach((p) => {
                 p[slot].forEach((x, i) => {
@@ -97,13 +97,14 @@ class OpPipeline extends op_1.Op {
             });
             slots.forEach((p) => {
                 compiled.push(new spread_1.OpSpread({
+                    name: `${slot} ${idx}`,
                     ops: p
                 }));
             });
         }
-        pipeline.forEach((step) => {
+        pipeline.forEach((step, i) => {
             // Collect pre
-            compilePrePost(step, 'pre');
+            compilePrePost(step, 'pre', i);
             // let pres: Op[][] = []
             // step.forEach((p) => {
             //   p.pre.forEach((x, i) => {
@@ -124,10 +125,11 @@ class OpPipeline extends op_1.Op {
                 tasks = tasks.concat(p.spread);
             });
             compiled.push(new spread_1.OpSpread({
+                name: `tasks ${i}`,
                 ops: tasks
             }));
             // Collect post
-            compilePrePost(step, 'post');
+            compilePrePost(step, 'post', i);
             // step.forEach((p) => {
             //   p.post.forEach((x) => {
             //     compiled.push(x)

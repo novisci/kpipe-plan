@@ -17,7 +17,7 @@ function renderOp (cop: Op, stream: Writable, indent = 0, term = ''): void {
   const opcode = cop.keyword
   if (['plan', 'spread', 'stage'].includes(opcode)) {
     // Group ops
-    stream.write('  '.repeat(indent) + `["${cop.keyword}", "${cop.name}", [` + '\n')
+    stream.write('  '.repeat(indent) + `["${cop.keyword}","${cop.name}",[` + '\n')
     cop.ops.forEach((o, i) => {
       renderOp(o, stream, indent + 1, i < cop.ops.length - 1 ? ',' : '')
     })

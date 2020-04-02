@@ -99,7 +99,7 @@ export class OpPipeline extends Op {
     })
 
     // console.error(util.inspect(pipeline, false, null, true /* enable colors */))
-    function compilePrePost (step: PipeStep[], slot: string) {
+    function compilePrePost (step: PipeStep[], slot: string, idx: number) {
       let slots: Op[][] = []
       step.forEach((p) => {
         p[slot].forEach((x, i) => {
@@ -111,14 +111,15 @@ export class OpPipeline extends Op {
       })
       slots.forEach((p) => {
         compiled.push(new OpSpread({
+          name: `${slot} ${idx}`,
           ops: p
         }))
       })
     }
 
-    pipeline.forEach((step) => {
+    pipeline.forEach((step, i) => {
       // Collect pre
-      compilePrePost(step, 'pre')
+      compilePrePost(step, 'pre', i)
       // let pres: Op[][] = []
       // step.forEach((p) => {
       //   p.pre.forEach((x, i) => {
@@ -139,10 +140,11 @@ export class OpPipeline extends Op {
         tasks = tasks.concat(p.spread)
       })
       compiled.push(new OpSpread({
+        name: `tasks ${i}`,
         ops: tasks
       }))
       // Collect post
-      compilePrePost(step, 'post')
+      compilePrePost(step, 'post', i)
       // step.forEach((p) => {
       //   p.post.forEach((x) => {
       //     compiled.push(x)

@@ -7,33 +7,33 @@
       }, [
         ["pipe", {
           "pre": [
-            ["echo", "pipe 0 - pre ${P_X}"],
-            ["echo", "pipe 0 - pre 1 ${P_X}"]
+            ["echo", "pre ${P_X} A"],
+            ["echo", "pre 1 ${P_X} A"]
           ],
-          "post": [["echo", "pipe 0 - post ${P_X}"]]
+          "post": [["echo", "post ${P_X} A"]]
         }, [
-          ["echo", "pipe 0 - tasks ${P_X}"]
+          ["echo", "tasks ${P_X} A"]
         ]],
         ["pipe", {
-          "pre": [["echo", "pipe 1 - pre ${P_X}"]],
-          "post": [["echo", "pipe 1 - post ${P_X}"]]
+          "pre": [["echo", "pre ${P_X} B"]],
+          "post": [["echo", "post ${P_X} B"]]
         }, [
-          ["echo", "pipe 1 - tasks ${P_X}"]
+          ["echo", "tasks ${P_X} B"]
         ]],
         ["pipe", {
-          "pre": [["echo", "pipe 2 - pre ${P_X}"]],
-          "post": [["echo", "pipe 2 - post ${P_X}"]]
+          "pre": [["echo", "pre ${P_X} C"]],
+          "post": [["echo", "post ${P_X} C"]]
         }, [
-          ["echo", "pipe 2 - tasks ${P_X}"]
+          ["echo", "tasks ${P_X} C"]
         ]],
         ["pipe", {
-          "pre": [["echo", "pipe 3 - pre ${P_X}"]],
+          "pre": [["echo", "pre ${P_X} D"]],
           "post": [
-            ["echo", "pipe 3 - post ${P_X}"],
-            ["echo", "pipe 3 - post 1 ${P_X}"]
+            ["echo", "post ${P_X} D"],
+            ["echo", "post 1 ${P_X} D"]
           ]
         }, [
-          ["echo", "pipe 3 - tasks ${P_X}"]
+          ["echo", "tasks ${P_X} D"]
         ]]
       ]]
     ]]
