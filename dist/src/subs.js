@@ -27,7 +27,7 @@ function substitute(obj, vars, strict = false) {
     if (Array.isArray(obj)) {
         return obj.map((a) => substitute(a, vars, strict));
     }
-    if (typeof obj === 'object') {
+    if (typeof obj === 'object' && obj.constructor === Object) {
         return substituteObject(obj, vars, strict);
     }
     return obj;

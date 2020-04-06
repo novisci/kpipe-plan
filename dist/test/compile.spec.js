@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const oper_1 = require("../src/oper");
+const __1 = require("..");
+const seq_1 = require("../src/ops/seq");
 const testCompile = (ops) => {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
+    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
 };
 test('malformed input (<2 elements) throws error', () => {
     expect(() => testCompile([['def']])).toThrow();
@@ -38,7 +39,7 @@ test('def operation substitues values', () => {
         ['task', 'flowerSmell', ['arg1']]
     ];
     // console.error('IN', ...ops)
-    const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
+    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([
@@ -64,7 +65,7 @@ test('with operation generates sequences', () => {
     ];
     // console.error('IN', ...ops)
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
+    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([
@@ -88,7 +89,7 @@ test('seq operation (start, end) interpolates operation string argument', () => 
     ];
     // console.error('IN', ...ops)
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = oper_1.compileOps(oper_1.parseOps(ops), {});
+    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([
@@ -101,56 +102,56 @@ test('seq operation (start, end) interpolates operation string argument', () => 
 });
 /* eslint-disable-next-line quotes */
 test('seq options {"start": 1, "end": 10} => {start: 1, end: 10, by: 1}', () => {
-    const res = oper_1.seqOpts({ start: 1, end: 10 });
+    const res = seq_1.seqOpts({ start: 1, end: 10 });
     expect(res.start).toBe(1);
     expect(res.end).toBe(10);
     expect(res.by).toBe(1);
 });
 /* eslint-disable-next-line quotes */
 test('seq options {"count": 10} => {start: 0, end: 9, by: 1}', () => {
-    const res = oper_1.seqOpts({ count: 10 });
+    const res = seq_1.seqOpts({ count: 10 });
     expect(res.start).toBe(0);
     expect(res.end).toBe(9);
     expect(res.by).toBe(1);
 });
 /* eslint-disable-next-line quotes */
 test('seq options {"start": 1, "count": 10} => {start: 1, end: 10, by: 1}', () => {
-    const res = oper_1.seqOpts({ start: 1, count: 10 });
+    const res = seq_1.seqOpts({ start: 1, count: 10 });
     expect(res.start).toBe(1);
     expect(res.end).toBe(10);
     expect(res.by).toBe(1);
 });
 /* eslint-disable-next-line quotes */
 test('seq options {"start": 1, "end": 10, "by": 2} => {start: 1, end: 10, by: 2}', () => {
-    const res = oper_1.seqOpts({ start: 1, end: 10, by: 2 });
+    const res = seq_1.seqOpts({ start: 1, end: 10, by: 2 });
     expect(res.start).toBe(1);
     expect(res.end).toBe(10);
     expect(res.by).toBe(2);
 });
 /* eslint-disable-next-line quotes */
 test('seq options {"count": 10, "by": 2} => {start: 0, end: 9, by: 2}', () => {
-    const res = oper_1.seqOpts({ count: 10, by: 2 });
+    const res = seq_1.seqOpts({ count: 10, by: 2 });
     expect(res.start).toBe(0);
     expect(res.end).toBe(9);
     expect(res.by).toBe(2);
 });
 /* eslint-disable-next-line quotes */
 test('seq options "10" => {start: 0, end: 9, by: 1}', () => {
-    const res = oper_1.seqOpts('10');
+    const res = seq_1.seqOpts('10');
     expect(res.start).toBe(0);
     expect(res.end).toBe(9);
     expect(res.by).toBe(1);
 });
 /* eslint-disable-next-line quotes */
 test('seq "1 10" => {start: 1, end: 10, by: 1}', () => {
-    const res = oper_1.seqOpts('1 10');
+    const res = seq_1.seqOpts('1 10');
     expect(res.start).toBe(1);
     expect(res.end).toBe(10);
     expect(res.by).toBe(1);
 });
 /* eslint-disable-next-line quotes */
 test('seq "0 10 2" => {start: 0, end: 10, by: 2}', () => {
-    const res = oper_1.seqOpts('0 10 2');
+    const res = seq_1.seqOpts('0 10 2');
     expect(res.start).toBe(0);
     expect(res.end).toBe(10);
     expect(res.by).toBe(2);

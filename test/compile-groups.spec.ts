@@ -1,4 +1,4 @@
-import { compileOps, parseOps } from '../src/oper'
+import { compileOps, parseOps } from '..'
 
 test('plan operation creates plan group', () => {
   const ops = [

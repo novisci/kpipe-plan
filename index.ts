@@ -1,4 +1,5 @@
-export { compileOps, parseOps, executeOps } from './src/oper'
+export { compileOps, executeOps } from './src/oper'
+export { parseOps } from './src/parse'
 export { emitTasks } from './src/task'
-export { Op } from './src/oper'
+export { Op } from './src/op'
 export { Task, serializeTask, stateFromTaskId } from './src/task'

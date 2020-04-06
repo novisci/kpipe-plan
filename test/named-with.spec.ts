@@ -1,4 +1,4 @@
-import { compileOps, parseOps } from '../src/oper'
+import { compileOps, parseOps } from '..'
 
 test('compile from JSON file', () => {
   const ops = JSON.parse(require('fs').readFileSync('./test/named-with.json'))
