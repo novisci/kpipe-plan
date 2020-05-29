@@ -1,14 +1,88 @@
+import { Parser, Expression } from 'expr-eval'
+
+const parser = new Parser({
+  operators: {
+    // // These default to true, but are included to be explicit
+    // add: true,
+    // concatenate: true,
+    // conditional: true,
+    // divide: true,
+    // factorial: true,
+    // multiply: true,
+    // power: true,
+    // remainder: true,
+    // subtract: true,
+
+    // // Disable and, or, not, <, ==, !=, etc.
+    // logical: false,
+    // comparison: false,
+
+    // // Disable 'in' and = operators
+    // 'in': false,
+    // assignment: false
+  }
+})
+
+parser.functions.padZero = (s: any, p: any = 5): string => {
+  if (typeof s !== 'number' && typeof s !== 'string') {
+    throw Error(`padZero() argument must be a string or a number`)
+  }
+  if (typeof p !== 'number') {
+    throw Error('padZero() padding must be a number')
+  }
+  return s.toString().padStart(p, '0')
+}
+
+parser.functions.concat = (...args: any[]): string => {
+  args.forEach((a) => {
+    if (typeof a !== 'string') {
+      throw Error(`concat() accepts only string argments`)
+    }
+  })
+  return ''.concat(...args)
+}
+
+// function evaluateExprOld (m: string, vars: any, strict: boolean): string {
+//   const v = m.substring(2, m.length - 1)
+//   if (typeof vars[v] !== 'undefined') {
+//     return vars[v]
+//   }
+//   if (strict) {
+//     throw Error(`Variable "${v} is undefined"`)
+//   }
+//   return m
+// }
+
+function evaluateExpr (m: string, vars: any, strict: boolean): string {
+  const tmpl: string = m.substring(2, m.length - 1)
+  const expr: Expression = parser.parse(tmpl)
+  const simp: Expression = expr.simplify(vars)
+  if (simp.variables().length > 0) {
+    if (strict) {
+      throw Error(`Undefined variables: ${simp.variables().join(', ')}`)
+    }
+    return '${' + simp.toString() + '}'
+  }
+  // let v = simp.toString()
+  let v = simp.evaluate()
+
+  if (typeof v === 'number') {
+    v = v.toString()
+  }
+
+  if (typeof v === 'string' && v.match(/^".*"$/)) {
+    v = v.substring(1, v.length - 1)
+  }
+
+  // console.debug(vars)
+  // console.debug([tmpl, expr.symbols(), simp.symbols(), simp.toString(), v])
+  return v
+}
+
 function substituteString (str: string, vars: any, strict = false): string {
   const rx = /\${[^{}]*}/g
   return str.replace(rx, (m) => {
-    const v: string = m.substring(2, m.length - 1)
-    if (typeof vars[v] !== 'undefined') {
-      return vars[v]
-    }
-    if (strict) {
-      throw Error(`Variable "${v}" is undefined`)
-    }
-    return m
+    return evaluateExpr(m, vars, strict)
   })
 }
 

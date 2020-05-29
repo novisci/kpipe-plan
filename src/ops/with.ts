@@ -1,6 +1,6 @@
 import { substitute } from '../subs'
 import { Op, OpInitData, State, Result, Props } from '../op'
-import { compileOps } from  '../oper'
+import { compileOps } from '../oper'
 
 // -------------------------------------------
 // WITH
@@ -42,7 +42,7 @@ export class OpWith extends Op {
     }
 
     if (!loopDef) {
-      loopDef = this.options
+      loopDef = { ...this.options }
     }
 
     // console.debug('WITH', loopDef)

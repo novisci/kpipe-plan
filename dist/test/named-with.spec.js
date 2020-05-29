@@ -2,7 +2,25 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
 test('compile from JSON file', () => {
-    const ops = JSON.parse(require('fs').readFileSync('./test/named-with.json'));
+    /* eslint-disable no-template-curly-in-string */
+    const ops = [
+        ['def', {
+                'prefix': 's3://novisci-data/P0023/20190930/csv',
+                'name': 'Test Named With'
+            }],
+        ['with', 'TOPICS', {
+                'topic': ['rawtopic', 'other']
+            }],
+        ['with', 'TOPICS', [
+                ['seq', '0 10', [
+                        ['task', 'tasks/csvtotopic', [
+                                '${prefix}/novisci_events_20sep2019-part-${X}.csv',
+                                '${topic}'
+                            ]]
+                    ]]
+            ]]
+    ];
+    /* eslint-enable no-template-curly-in-string */
     // console.error('IN', ...ops)
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});

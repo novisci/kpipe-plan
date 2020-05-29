@@ -37,7 +37,7 @@ class OpWith extends op_1.Op {
             throw Error('Named with operation has undefined label and no loop definition');
         }
         if (!loopDef) {
-            loopDef = this.options;
+            loopDef = { ...this.options };
         }
         // console.debug('WITH', loopDef)
         // Determine length of longest array

@@ -84,7 +84,7 @@ test('with operation generates sequences', () => {
 test('seq operation (start, end) interpolates operation string argument', () => {
     const ops = [
         ['seq', { start: 1, end: 5 }, [
-                ['echo', '${I} ${X}'] /* eslint-disable-line no-template-curly-in-string */
+                ['echo', '${I} ${X} ${padZero(I+101)} ${concat(X, padZero(I+1))}'] /* eslint-disable-line no-template-curly-in-string */
             ]]
     ];
     // console.error('IN', ...ops)
@@ -93,11 +93,11 @@ test('seq operation (start, end) interpolates operation string argument', () => 
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([
-        ['echo', '1 00001'],
-        ['echo', '2 00002'],
-        ['echo', '3 00003'],
-        ['echo', '4 00004'],
-        ['echo', '5 00005']
+        ['echo', '1 00001 00102 0000100002'],
+        ['echo', '2 00002 00103 0000200003'],
+        ['echo', '3 00003 00104 0000300004'],
+        ['echo', '4 00004 00105 0000400005'],
+        ['echo', '5 00005 00106 0000500006']
     ]));
 });
 /* eslint-disable-next-line quotes */
