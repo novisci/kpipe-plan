@@ -12,7 +12,12 @@ const vars = {
   AN: 1,
   BN: 2,
   CN: 3,
-  OBJ: {}
+  OBJ: {
+    J: 'jay',
+    F: 'eff',
+    K: 'kay'
+  },
+  ARR: [ 0, 1, 2, 3 ]
 }
 
 test('No variable substitution', () => {
@@ -69,6 +74,10 @@ test('substitute math expression', () => {
 
 test('substitute using min, max', () => {
   expect(substitute('${min(AN, BN)} ${max(AN, BN)}', vars)).toBe('1 2')
+})
+
+test('substitute can access object/array elements', () => {
+  expect(substitute('${OBJ.J} ${ARR[2]}', vars)).toBe('jay 2')
 })
 
 /* eslint-enable no-template-curly-in-string */

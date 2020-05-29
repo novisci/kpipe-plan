@@ -2,6 +2,7 @@ import { Parser, Expression } from 'expr-eval'
 
 const parser = new Parser({
   operators: {
+    assignment: false
     // // These default to true, but are included to be explicit
     // add: true,
     // concatenate: true,
@@ -57,26 +58,33 @@ function evaluateExpr (m: string, vars: any, strict: boolean): string {
   const tmpl: string = m.substring(2, m.length - 1)
   const expr: Expression = parser.parse(tmpl)
   const simp: Expression = expr.simplify(vars)
+
+  let value: any
   if (simp.variables().length > 0) {
     if (strict) {
       throw Error(`Undefined variables: ${simp.variables().join(', ')}`)
     }
-    return '${' + simp.toString() + '}'
-  }
-  // let v = simp.toString()
-  let v = simp.evaluate()
+    // Not all variables were resolved, return the simplified expression
+    value = '${' + simp.toString() + '}'
+  } else {
+    value = simp.evaluate()
 
-  if (typeof v === 'number') {
-    v = v.toString()
+    // Convert numeric result to string
+    if (typeof value === 'number') {
+      value = value.toString()
+    }
+
+    if (typeof value !== 'string') {
+      throw Error(`Unexpected expression result ${value}`)
+    }
+
+    if (value.match(/^".*"$/)) {
+      value = value.substring(1, value.length - 1)
+    }
   }
 
-  if (typeof v === 'string' && v.match(/^".*"$/)) {
-    v = v.substring(1, v.length - 1)
-  }
-
-  // console.debug(vars)
-  // console.debug([tmpl, expr.symbols(), simp.symbols(), simp.toString(), v])
-  return v
+  // console.debug(`${tmpl} => ${simp.toString()} = ${value}`)
+  return value
 }
 
 function substituteString (str: string, vars: any, strict = false): string {

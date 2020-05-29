@@ -3,22 +3,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const expr_eval_1 = require("expr-eval");
 const parser = new expr_eval_1.Parser({
     operators: {
-    // // These default to true, but are included to be explicit
-    // add: true,
-    // concatenate: true,
-    // conditional: true,
-    // divide: true,
-    // factorial: true,
-    // multiply: true,
-    // power: true,
-    // remainder: true,
-    // subtract: true,
-    // // Disable and, or, not, <, ==, !=, etc.
-    // logical: false,
-    // comparison: false,
-    // // Disable 'in' and = operators
-    // 'in': false,
-    // assignment: false
+        assignment: false
+        // // These default to true, but are included to be explicit
+        // add: true,
+        // concatenate: true,
+        // conditional: true,
+        // divide: true,
+        // factorial: true,
+        // multiply: true,
+        // power: true,
+        // remainder: true,
+        // subtract: true,
+        // // Disable and, or, not, <, ==, !=, etc.
+        // logical: false,
+        // comparison: false,
+        // // Disable 'in' and = operators
+        // 'in': false,
+        // assignment: false
     }
 });
 parser.functions.padZero = (s, p = 5) => {
@@ -52,23 +53,29 @@ function evaluateExpr(m, vars, strict) {
     const tmpl = m.substring(2, m.length - 1);
     const expr = parser.parse(tmpl);
     const simp = expr.simplify(vars);
+    let value;
     if (simp.variables().length > 0) {
         if (strict) {
             throw Error(`Undefined variables: ${simp.variables().join(', ')}`);
         }
-        return '${' + simp.toString() + '}';
+        // Not all variables were resolved, return the simplified expression
+        value = '${' + simp.toString() + '}';
     }
-    // let v = simp.toString()
-    let v = simp.evaluate();
-    if (typeof v === 'number') {
-        v = v.toString();
+    else {
+        value = simp.evaluate();
+        // Convert numeric result to string
+        if (typeof value === 'number') {
+            value = value.toString();
+        }
+        if (typeof value !== 'string') {
+            throw Error(`Unexpected expression result ${value}`);
+        }
+        if (value.match(/^".*"$/)) {
+            value = value.substring(1, value.length - 1);
+        }
     }
-    if (typeof v === 'string' && v.match(/^".*"$/)) {
-        v = v.substring(1, v.length - 1);
-    }
-    // console.debug(vars)
-    // console.debug([tmpl, expr.symbols(), simp.symbols(), simp.toString(), v])
-    return v;
+    // console.debug(`${tmpl} => ${simp.toString()} = ${value}`)
+    return value;
 }
 function substituteString(str, vars, strict = false) {
     const rx = /\${[^{}]*}/g;
