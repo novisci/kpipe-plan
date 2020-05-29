@@ -26,7 +26,17 @@ Output
 The name is Froderick Frankensteen
 ```
 
+## Expressions and Substitution
 
+Expressions in strings embedded within the plan strings are enclosed with `${` and `}`. The expression within the enclosure is evaluated
+and produces a string result which is substituted for the expression in the string. Variables defined in `def` ops or otherwise available
+in the plan compile state (named `with`), are available as substitution variables in expressions. Math symbolic operators as well as unary and
+binary math operators are available. `kpipe-plan` uses the module `expr-eval` (https://www.npmjs.com/package/expr-eval) to parse, simplify, and evaluate expressions.
+
+In addition to the standard math expression operators, the following utility functions are available
+
+- `padZero(x: string|number, n: number = 5): string` <br/> Left pad (with `0`) the supplied string or number `x` to `n` digits (default 5)
+- `concat( ...args: string[]): string` <br/> Concatenate the supplied string arguments into a single string
 
 ## Basic Operations
 
