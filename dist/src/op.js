@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // -------------------------------------------
 const runOpKeywords = ['echo', 'task', 'exec'];
 const compileOpKeywords = ['spread', 'stage', 'plan'];
-const macroOpKeywords = ['def', 'seq', 'with', 'include', 'pipeline', 'pipe'];
+const macroOpKeywords = ['def', 'seq', 'with', 'include', 'pipeline', 'pipe', 'list'];
 exports.opKeywords = [...runOpKeywords, ...compileOpKeywords, ...macroOpKeywords];
 // -------------------------------------------
 // OP

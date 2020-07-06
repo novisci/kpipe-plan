@@ -24,4 +24,6 @@ var task_1 = require("./task");
 exports.OpTask = task_1.OpTask;
 var with_1 = require("./with");
 exports.OpWith = with_1.OpWith;
+var list_1 = require("./list");
+exports.OpList = list_1.OpList;
 //# sourceMappingURL=index.js.map

@@ -3,7 +3,7 @@ import { Task } from './task'
 // -------------------------------------------
 const runOpKeywords = ['echo', 'task', 'exec']
 const compileOpKeywords = ['spread', 'stage', 'plan']
-const macroOpKeywords = ['def', 'seq', 'with', 'include', 'pipeline', 'pipe']
+const macroOpKeywords = ['def', 'seq', 'with', 'include', 'pipeline', 'pipe', 'list']
 export const opKeywords = [...runOpKeywords, ...compileOpKeywords, ...macroOpKeywords]
 
 // type Props = { [key: string]: (string | number | string[] | number[] | Op[]) }

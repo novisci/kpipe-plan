@@ -2,7 +2,7 @@ import { Op, OpData, OpInit, opKeywords, Props } from './op'
 import {
   OpDef, OpEcho, OpExec, OpInclude, OpPipe,
   OpPipeline, OpPlan, OpSeq, OpSpread,
-  OpStage, OpTask, OpWith
+  OpStage, OpTask, OpWith, OpList
 } from './ops'
 
 // -------------------------------------------
@@ -53,6 +53,7 @@ function parseOpInit (d: OpData): OpInit {
     case 'include': return parseNodeArgs(d)
     case 'pipeline': return parseNodeArgs(d)
     case 'pipe': return parsePipeArgs(d)
+    case 'list': return parseNodeArgs(d)
     default:
       throw Error(`Unknown keyword "${d[0]}" in parseOpInit`)
   }
@@ -72,6 +73,7 @@ function createOp (d: OpInit): Op {
     case 'include': return new OpInclude(d[1])
     case 'pipeline': return new OpPipeline(d[1])
     case 'pipe': return new OpPipe(d[1])
+    case 'list': return new OpList(d[1])
     default:
       throw Error(`Unknown keyword "${d[0]}" in parseOpInit`)
   }

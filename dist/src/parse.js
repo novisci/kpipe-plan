@@ -46,6 +46,7 @@ function parseOpInit(d) {
         case 'include': return parseNodeArgs(d);
         case 'pipeline': return parseNodeArgs(d);
         case 'pipe': return parsePipeArgs(d);
+        case 'list': return parseNodeArgs(d);
         default:
             throw Error(`Unknown keyword "${d[0]}" in parseOpInit`);
     }
@@ -64,6 +65,7 @@ function createOp(d) {
         case 'include': return new ops_1.OpInclude(d[1]);
         case 'pipeline': return new ops_1.OpPipeline(d[1]);
         case 'pipe': return new ops_1.OpPipe(d[1]);
+        case 'list': return new ops_1.OpList(d[1]);
         default:
             throw Error(`Unknown keyword "${d[0]}" in parseOpInit`);
     }

@@ -6,3 +6,4 @@ data
 .env
 archive
 coverage
+.DS_Store
