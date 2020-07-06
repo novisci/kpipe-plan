@@ -1,8 +1,8 @@
 import { substitute } from '../subs'
 import { Op, OpInitData, State, Result } from '../op'
-import { compileOps } from  '../oper'
+import { compileOps } from '../oper'
 import { OpSpread } from './spread'
-import * as util from 'util'
+// import * as util from 'util'
 
 // -------------------------------------------
 // PIPELINE
@@ -29,7 +29,7 @@ export class OpPipeline extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
+  async compile (state: Readonly<State>): Promise<Result> {
     const compiled: Op[] = []
 
     this.ops.forEach((o) => {
@@ -58,17 +58,17 @@ export class OpPipeline extends Op {
       })
       const cPipes: PipeStep[] = []
       // console.error(util.inspect(this, false, null, true /* enable colors */))
-      this.ops.forEach((o) => {
+      this.ops.forEach(async (o) => {
         // console.error(util.inspect(o, false, null, true /* enable colors */))
         let pre: Op[] = []
         if (Array.isArray(o.options.pre)) {
-          [pre] = compileOps(o.options.pre, pipeState)
+          [pre] = await compileOps(o.options.pre, pipeState)
         }
         let post: Op[] = []
         if (Array.isArray(o.options.post)) {
-          [post] = compileOps(o.options.post, pipeState)
+          [post] = await compileOps(o.options.post, pipeState)
         }
-        const [spread] = compileOps(o.ops, pipeState)
+        const [spread] = await compileOps(o.ops, pipeState)
         cPipes.push({
           pre,
           post,
@@ -99,8 +99,8 @@ export class OpPipeline extends Op {
     })
 
     // console.error(util.inspect(pipeline, false, null, true /* enable colors */))
-    function compilePrePost (step: PipeStep[], slot: string, idx: number) {
-      let slots: Op[][] = []
+    function compilePrePost (step: PipeStep[], slot: string, idx: number): void {
+      const slots: Op[][] = []
       step.forEach((p) => {
         p[slot].forEach((x, i) => {
           if (!slots[i]) {
@@ -150,7 +150,7 @@ export class OpPipeline extends Op {
       //     compiled.push(x)
       //   })
       // })
-   })
+    })
 
     // const pre: Op[][] = []
     // const post: Op[][] = []
@@ -192,7 +192,7 @@ export class OpPipeline extends Op {
     //     P_X: ('' + i).padStart(5, '0'),
     //     P_I: i
     //   })
-    //   const [cops] = compileOps(this.ops, withState) // Note: dumps state?
+    //   const [cops] = await compileOps(this.ops, withState) // Note: dumps state?
     //   if (cops.length > 0) {
     //     compiled = compiled.concat(cops)
     //   }

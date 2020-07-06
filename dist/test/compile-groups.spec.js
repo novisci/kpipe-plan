@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
-test('plan operation creates plan group', () => {
+test('plan operation creates plan group', async () => {
     const ops = [
         ['plan', 'testing', [
                 ['echo', 'plan 1']
@@ -12,7 +12,7 @@ test('plan operation creates plan group', () => {
     ];
     // console.error('IN', ops)
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
+    const [[...cops], { ...state }] = await __1.compileOps(__1.parseOps(ops), {});
     // console.error('OUT', cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify(ops));

@@ -1,6 +1,6 @@
 import { compileOps, parseOps } from '..'
 
-test('compile from JSON file', () => {
+test('compile from JSON file', async () => {
   /* eslint-disable no-template-curly-in-string */
   const ops = [
     ['def', {
@@ -23,7 +23,7 @@ test('compile from JSON file', () => {
 
   // console.error('IN', ...ops)
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  const [[...cops], { ...state }] = compileOps(parseOps(ops), {})
+  const [[...cops], { ...state }] = await compileOps(parseOps(ops), {})
   // cops[0].forEach((o) => o.forEach((so) => console.error(JSON.stringify(so))))
 
   expect(JSON.stringify(cops))

@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
-test('compile plan with pipeline', () => {
+// import { renderOpList } from '../src/render'
+test('compile plan with pipeline', async () => {
     // const ops = JSON.parse(require('fs').readFileSync('./test/pipeline-plan.json'))
     // console.error('IN', JSON.stringify(ops))
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     /* eslint-disable-next-line no-template-curly-in-string */
-    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps([['plan', 'Test pipeline', [['stage', 'Pipeline stage', [['pipeline', { 'concurrency': 5, 'depth': 10 }, [['pipe', { 'pre': [['echo', 'pre ${P_X} A'], ['echo', 'pre 1 ${P_X} A']], 'post': [['echo', 'post ${P_X} A']] }, [['echo', 'tasks ${P_X} A']]], ['pipe', { 'pre': [['echo', 'pre ${P_X} B']], 'post': [['echo', 'post ${P_X} B']] }, [['echo', 'tasks ${P_X} B']]], ['pipe', { 'pre': [['echo', 'pre ${P_X} C']], 'post': [['echo', 'post ${P_X} C']] }, [['echo', 'tasks ${P_X} C']]], ['pipe', { 'pre': [['echo', 'pre ${P_X} D']], 'post': [['echo', 'post ${P_X} D'], ['echo', 'post 1 ${P_X} D']] }, [['echo', 'tasks ${P_X} D']]]]]]]]]]), {});
+    const [[...cops]] = await __1.compileOps(__1.parseOps([['plan', 'Test pipeline', [['stage', 'Pipeline stage', [['pipeline', { 'concurrency': 5, 'depth': 10 }, [['pipe', { 'pre': [['echo', 'pre ${P_X} A'], ['echo', 'pre 1 ${P_X} A']], 'post': [['echo', 'post ${P_X} A']] }, [['echo', 'tasks ${P_X} A']]], ['pipe', { 'pre': [['echo', 'pre ${P_X} B']], 'post': [['echo', 'post ${P_X} B']] }, [['echo', 'tasks ${P_X} B']]], ['pipe', { 'pre': [['echo', 'pre ${P_X} C']], 'post': [['echo', 'post ${P_X} C']] }, [['echo', 'tasks ${P_X} C']]], ['pipe', { 'pre': [['echo', 'pre ${P_X} D']], 'post': [['echo', 'post ${P_X} D'], ['echo', 'post 1 ${P_X} D']] }, [['echo', 'tasks ${P_X} D']]]]]]]]]]), {});
     // console.error('OUT', JSON.stringify(cops))
     // renderOpList(cops)
     expect(JSON.stringify(cops))

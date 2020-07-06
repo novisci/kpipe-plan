@@ -14,7 +14,7 @@ class OpDef extends op_1.Op {
             options: subs_1.substitute(this.options, state, strict)
         });
     }
-    compile(state) {
+    async compile(state) {
         // Upsert these vars into the state
         return [[], Object.assign({}, state, this.options)];
     }

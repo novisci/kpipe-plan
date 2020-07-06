@@ -51,7 +51,7 @@ class Op {
         }
         return data;
     }
-    compile(state) {
+    async compile(state) {
         return [[this], state];
     }
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */

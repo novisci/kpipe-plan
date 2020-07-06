@@ -1,6 +1,6 @@
 import { substitute } from '../subs'
 import { Op, OpInitData, State, Result } from '../op'
-import { compileOps } from  '../oper'
+import { compileOps } from '../oper'
 
 // -------------------------------------------
 // SEQ
@@ -22,7 +22,7 @@ export class OpSeq extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
+  async compile (state: Readonly<State>): Promise<Result> {
     let compiled: Op[] = []
 
     const { start, end, by } = seqOpts(this.name ? this.name : this.options)
@@ -33,7 +33,7 @@ export class OpSeq extends Op {
         X: ('' + i).padStart(5, '0'),
         I: i
       })
-      const [cops] = compileOps(this.ops, withState) // Note: dumps state?
+      const [cops] = await compileOps(this.ops, withState) // Note: dumps state?
       if (cops.length > 0) {
         compiled = compiled.concat(cops)
       }

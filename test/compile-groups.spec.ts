@@ -1,6 +1,6 @@
 import { compileOps, parseOps } from '..'
 
-test('plan operation creates plan group', () => {
+test('plan operation creates plan group', async () => {
   const ops = [
     [ 'plan', 'testing', [
       ['echo', 'plan 1']
@@ -12,7 +12,7 @@ test('plan operation creates plan group', () => {
 
   // console.error('IN', ops)
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  const [[...cops], { ...state }] = compileOps(parseOps(ops), {})
+  const [[...cops], { ...state }] = await compileOps(parseOps(ops), {})
   // console.error('OUT', cops)
 
   expect(JSON.stringify(cops))

@@ -21,7 +21,7 @@ class OpSeq extends op_1.Op {
             ops: this.ops.map((o) => o.substitute(seqState, strict))
         });
     }
-    compile(state) {
+    async compile(state) {
         let compiled = [];
         const { start, end, by } = seqOpts(this.name ? this.name : this.options);
         let i;
@@ -30,7 +30,7 @@ class OpSeq extends op_1.Op {
                 X: ('' + i).padStart(5, '0'),
                 I: i
             });
-            const [cops] = oper_1.compileOps(this.ops, withState); // Note: dumps state?
+            const [cops] = await oper_1.compileOps(this.ops, withState); // Note: dumps state?
             if (cops.length > 0) {
                 compiled = compiled.concat(cops);
             }

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
-test('compile from JSON file', () => {
+test('compile from JSON file', async () => {
     /* eslint-disable no-template-curly-in-string */
     const ops = [
         ['def', {
@@ -23,7 +23,7 @@ test('compile from JSON file', () => {
     /* eslint-enable no-template-curly-in-string */
     // console.error('IN', ...ops)
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
+    const [[...cops], { ...state }] = await __1.compileOps(__1.parseOps(ops), {});
     // cops[0].forEach((o) => o.forEach((so) => console.error(JSON.stringify(so))))
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([

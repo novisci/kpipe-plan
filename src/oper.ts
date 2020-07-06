@@ -2,15 +2,17 @@ import { Task } from './task'
 import { Op, State, Result, ExecResult } from './op'
 
 // -------------------------------------------
-export function compileOps (ops: Op[], state: Readonly<State>): Result {
+export async function compileOps (ops: Op[], state: Readonly<State>): Promise<Result> {
   let compiled: Op[] = []
   let withState: State = state
-  ops.forEach((o) => {
-    const [cops, ste] = o.substitute(withState, false).compile(withState)
+  await ops.reduce(async (prev, o) => {
+  // ops.forEach(async (o) => {
+    await prev
+    const [cops, ste] = await o.substitute(withState, false).compile(withState)
     compiled = compiled.concat(cops)
     withState = ste
     // console.debug(withState)
-  })
+  }, Promise.resolve())
   return [compiled, withState]
 }
 

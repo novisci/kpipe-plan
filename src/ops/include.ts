@@ -1,7 +1,7 @@
 import { substitute } from '../subs'
 import { Op, OpInitData, State, Result } from '../op'
 import { parseOps } from '../parse'
-import { compileOps } from  '../oper'
+import { compileOps } from '../oper'
 
 // -------------------------------------------
 // INCLUDE
@@ -18,7 +18,7 @@ export class OpInclude extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
+  async compile (state: Readonly<State>): Promise<Result> {
     // Load external json file
     const path = this.name.replace(/\.json$/i, '')
     const ext = JSON.parse(require('fs').readFileSync(`${path}.json`))

@@ -17,7 +17,7 @@ class OpInclude extends op_1.Op {
             name: subs_1.substitute(this.name, state, strict)
         });
     }
-    compile(state) {
+    async compile(state) {
         // Load external json file
         const path = this.name.replace(/\.json$/i, '');
         const ext = JSON.parse(require('fs').readFileSync(`${path}.json`));

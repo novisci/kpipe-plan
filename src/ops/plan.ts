@@ -1,5 +1,5 @@
 import { Op, OpInitData, State, Result, ExecResult } from '../op'
-import { executeOps, compileOps } from  '../oper'
+import { executeOps, compileOps } from '../oper'
 
 // -------------------------------------------
 const UIDGenerator = require('uid-generator')
@@ -20,8 +20,8 @@ export class OpPlan extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
-    const [cops, ste] = compileOps(this.ops, state)
+  async compile (state: Readonly<State>): Promise<Result> {
+    const [cops, ste] = await compileOps(this.ops, state)
     return [[new OpPlan({
       name: this.name,
       options: this.options,

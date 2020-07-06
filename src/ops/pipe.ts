@@ -1,6 +1,6 @@
 import { substitute } from '../subs'
 import { Op, OpInitData, State, Result } from '../op'
-import { compileOps } from  '../oper'
+import { compileOps } from '../oper'
 
 // -------------------------------------------
 // PIPE
@@ -18,8 +18,8 @@ export class OpPipe extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
-    const [cops, ste] = compileOps(this.ops, state)
+  async compile (state: Readonly<State>): Promise<Result> {
+    const [cops, ste] = await compileOps(this.ops, state)
     // console.error(util.inspect(cops, false, null, true /* enable colors */))
     // console.error(util.inspect(this.options, false, null, true /* enable colors */))
     return [[new OpPipe({

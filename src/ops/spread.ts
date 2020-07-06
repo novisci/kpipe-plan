@@ -1,5 +1,5 @@
 import { Op, OpInitData, State, Result, ExecResult } from '../op'
-import { compileOps, executeOps } from  '../oper'
+import { compileOps, executeOps } from '../oper'
 
 // -------------------------------------------
 // SPREAD
@@ -17,8 +17,8 @@ export class OpSpread extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
-    const [cops, ste] = compileOps(this.ops, state)
+  async compile (state: Readonly<State>): Promise<Result> {
+    const [cops, ste] = await compileOps(this.ops, state)
     return [[new OpSpread({
       name: this.name,
       options: this.options,

@@ -18,8 +18,8 @@ class OpPlan extends op_1.Op {
             ops: this.ops.map((o) => o.substitute(state, strict))
         });
     }
-    compile(state) {
-        const [cops, ste] = oper_1.compileOps(this.ops, state);
+    async compile(state) {
+        const [cops, ste] = await oper_1.compileOps(this.ops, state);
         return [[new OpPlan({
                     name: this.name,
                     options: this.options,

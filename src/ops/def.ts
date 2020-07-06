@@ -15,7 +15,7 @@ export class OpDef extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
+  async compile (state: Readonly<State>): Promise<Result> {
     // Upsert these vars into the state
     return [[], Object.assign({}, state, this.options)]
   }

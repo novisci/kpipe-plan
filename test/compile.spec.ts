@@ -1,9 +1,9 @@
 import { compileOps, parseOps } from '..'
 import { seqOpts } from '../src/ops/seq'
 
-const testCompile = (ops: any[]): void => {
+const testCompile = async (ops: any[]): Promise<void> => {
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  const [[...cops], { ...state }] = compileOps(parseOps(ops), {})
+  const [[...cops], { ...state }] = await compileOps(parseOps(ops), {})
 }
 
 test('malformed input (<2 elements) throws error', () => {
@@ -33,7 +33,7 @@ test('malformed input (nested throws error', () => {
   ])).toThrow()
 })
 
-test('def operation substitues values', () => {
+test('def operation substitues values', async () => {
   const ops = [
     ['def', {
       param: 'Freddo',
@@ -45,7 +45,7 @@ test('def operation substitues values', () => {
   ]
 
   // console.error('IN', ...ops)
-  const [[...cops], { ...state }] = compileOps(parseOps(ops), {})
+  const [[...cops], { ...state }] = await compileOps(parseOps(ops), {})
   // console.error('OUT', ...cops)
 
   expect(JSON.stringify(cops))
@@ -62,7 +62,7 @@ test('def operation substitues values', () => {
     }))
 })
 
-test('with operation generates sequences', () => {
+test('with operation generates sequences', async () => {
   const ops = [
     ['with', {
       PARITY: [0, 1],
@@ -75,7 +75,7 @@ test('with operation generates sequences', () => {
 
   // console.error('IN', ...ops)
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  const [[...cops], { ...state }] = compileOps(parseOps(ops), {})
+  const [[...cops], { ...state }] = await compileOps(parseOps(ops), {})
   // console.error('OUT', ...cops)
 
   expect(JSON.stringify(cops))
@@ -93,7 +93,7 @@ test('with operation generates sequences', () => {
     ]))
 })
 
-test('seq operation (start, end) interpolates operation string argument', () => {
+test('seq operation (start, end) interpolates operation string argument', async () => {
   const ops = [
     ['seq', { start: 1, end: 5 }, [
       ['echo', '${I} ${X} ${padZero(I+101)} ${concat(X, padZero(I+1))}'] /* eslint-disable-line no-template-curly-in-string */
@@ -102,7 +102,7 @@ test('seq operation (start, end) interpolates operation string argument', () => 
 
   // console.error('IN', ...ops)
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  const [[...cops], { ...state }] = compileOps(parseOps(ops), {})
+  const [[...cops], { ...state }] = await compileOps(parseOps(ops), {})
   // console.error('OUT', ...cops)
 
   expect(JSON.stringify(cops))

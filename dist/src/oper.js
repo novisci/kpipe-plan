@@ -1,15 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // -------------------------------------------
-function compileOps(ops, state) {
+async function compileOps(ops, state) {
     let compiled = [];
     let withState = state;
-    ops.forEach((o) => {
-        const [cops, ste] = o.substitute(withState, false).compile(withState);
+    await ops.reduce(async (prev, o) => {
+        // ops.forEach(async (o) => {
+        await prev;
+        const [cops, ste] = await o.substitute(withState, false).compile(withState);
         compiled = compiled.concat(cops);
         withState = ste;
         // console.debug(withState)
-    });
+    }, Promise.resolve());
     return [compiled, withState];
 }
 exports.compileOps = compileOps;

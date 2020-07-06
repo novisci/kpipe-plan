@@ -1,5 +1,5 @@
 import { Op, OpInitData, State, Result, ExecResult } from '../op'
-import { compileOps, executeOps } from  '../oper'
+import { compileOps, executeOps } from '../oper'
 import { Task } from '../task'
 
 // -------------------------------------------
@@ -22,8 +22,8 @@ export class OpStage extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
-    const [cops, ste] = compileOps(this.ops, state)
+  async compile (state: Readonly<State>): Promise<Result> {
+    const [cops, ste] = await compileOps(this.ops, state)
     return [[new OpStage({
       name: this.name,
       options: this.options,

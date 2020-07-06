@@ -74,7 +74,7 @@ export class Op {
     return data
   }
 
-  compile (state: Readonly<State>): Result {
+  async compile (state: Readonly<State>): Promise<Result> {
     return [[this], state]
   }
 

@@ -17,8 +17,8 @@ class OpPipe extends op_1.Op {
             ops: this.ops.map((o) => o.substitute(state, strict))
         });
     }
-    compile(state) {
-        const [cops, ste] = oper_1.compileOps(this.ops, state);
+    async compile(state) {
+        const [cops, ste] = await oper_1.compileOps(this.ops, state);
         // console.error(util.inspect(cops, false, null, true /* enable colors */))
         // console.error(util.inspect(this.options, false, null, true /* enable colors */))
         return [[new OpPipe({

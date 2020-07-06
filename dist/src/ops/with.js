@@ -17,7 +17,7 @@ class OpWith extends op_1.Op {
             ops: this.ops.map((o) => o.substitute(state, strict))
         });
     }
-    compile(state) {
+    async compile(state) {
         let compiled = [];
         const hasOpts = Object.values(this.options).length > 0;
         // Validate any supplied loop definitions
@@ -55,7 +55,7 @@ class OpWith extends op_1.Op {
                         withState[e[0]] = e[1];
                     }
                 });
-                const [cops] = oper_1.compileOps(this.ops, withState); // Note: dumps state?
+                const [cops] = await oper_1.compileOps(this.ops, withState); // Note: dumps state?
                 if (cops.length > 0) {
                     compiled = compiled.concat(cops);
                 }

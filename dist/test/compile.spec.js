@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("..");
 const seq_1 = require("../src/ops/seq");
-const testCompile = (ops) => {
+const testCompile = async (ops) => {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
+    const [[...cops], { ...state }] = await __1.compileOps(__1.parseOps(ops), {});
 };
 test('malformed input (<2 elements) throws error', () => {
     expect(() => testCompile([['def']])).toThrow();
@@ -28,7 +28,7 @@ test('malformed input (nested throws error', () => {
             ]]
     ])).toThrow();
 });
-test('def operation substitues values', () => {
+test('def operation substitues values', async () => {
     const ops = [
         ['def', {
                 param: 'Freddo',
@@ -39,7 +39,7 @@ test('def operation substitues values', () => {
         ['task', 'flowerSmell', ['arg1']]
     ];
     // console.error('IN', ...ops)
-    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
+    const [[...cops], { ...state }] = await __1.compileOps(__1.parseOps(ops), {});
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([
@@ -53,7 +53,7 @@ test('def operation substitues values', () => {
         arg: 'Bull'
     }));
 });
-test('with operation generates sequences', () => {
+test('with operation generates sequences', async () => {
     const ops = [
         ['with', {
                 PARITY: [0, 1],
@@ -65,7 +65,7 @@ test('with operation generates sequences', () => {
     ];
     // console.error('IN', ...ops)
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
+    const [[...cops], { ...state }] = await __1.compileOps(__1.parseOps(ops), {});
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([
@@ -81,7 +81,7 @@ test('with operation generates sequences', () => {
         ['echo', '9 barney 1']
     ]));
 });
-test('seq operation (start, end) interpolates operation string argument', () => {
+test('seq operation (start, end) interpolates operation string argument', async () => {
     const ops = [
         ['seq', { start: 1, end: 5 }, [
                 ['echo', '${I} ${X} ${padZero(I+101)} ${concat(X, padZero(I+1))}'] /* eslint-disable-line no-template-curly-in-string */
@@ -89,7 +89,7 @@ test('seq operation (start, end) interpolates operation string argument', () => 
     ];
     // console.error('IN', ...ops)
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const [[...cops], { ...state }] = __1.compileOps(__1.parseOps(ops), {});
+    const [[...cops], { ...state }] = await __1.compileOps(__1.parseOps(ops), {});
     // console.error('OUT', ...cops)
     expect(JSON.stringify(cops))
         .toBe(JSON.stringify([

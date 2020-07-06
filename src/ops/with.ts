@@ -18,7 +18,7 @@ export class OpWith extends Op {
     })
   }
 
-  compile (state: Readonly<State>): Result {
+  async compile (state: Readonly<State>): Promise<Result> {
     let compiled: Op[] = []
     const hasOpts = Object.values(this.options).length > 0
 
@@ -62,7 +62,7 @@ export class OpWith extends Op {
             withState[e[0]] = e[1]
           }
         })
-        const [cops] = compileOps(this.ops, withState) // Note: dumps state?
+        const [cops] = await compileOps(this.ops, withState) // Note: dumps state?
         if (cops.length > 0) {
           compiled = compiled.concat(cops)
         }

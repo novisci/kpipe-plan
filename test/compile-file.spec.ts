@@ -1,11 +1,11 @@
 import { compileOps, parseOps } from '..'
 
-test('compile from JSON file', () => {
+test('compile from JSON file', async () => {
   const ops = JSON.parse(require('fs').readFileSync('./test/test-plan.json'))
 
   // console.error('IN', ...ops)
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  const [[...cops], { ...state }] = compileOps(parseOps(ops), {})
+  const [[...cops], { ...state }] = await compileOps(parseOps(ops), {})
   // cops[0].forEach((o) => o.forEach((so) => console.error(JSON.stringify(so))))
 
   expect(JSON.stringify(cops))

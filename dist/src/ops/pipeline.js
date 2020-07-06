@@ -4,6 +4,7 @@ const subs_1 = require("../subs");
 const op_1 = require("../op");
 const oper_1 = require("../oper");
 const spread_1 = require("./spread");
+// import * as util from 'util'
 // -------------------------------------------
 // PIPELINE
 // -------------------------------------------
@@ -27,7 +28,7 @@ class OpPipeline extends op_1.Op {
             ops: this.ops.map((o) => o.substitute(state, strict))
         });
     }
-    compile(state) {
+    async compile(state) {
         const compiled = [];
         this.ops.forEach((o) => {
             if (o.keyword !== 'pipe') {
@@ -46,17 +47,17 @@ class OpPipeline extends op_1.Op {
             });
             const cPipes = [];
             // console.error(util.inspect(this, false, null, true /* enable colors */))
-            this.ops.forEach((o) => {
+            this.ops.forEach(async (o) => {
                 // console.error(util.inspect(o, false, null, true /* enable colors */))
                 let pre = [];
                 if (Array.isArray(o.options.pre)) {
-                    [pre] = oper_1.compileOps(o.options.pre, pipeState);
+                    [pre] = await oper_1.compileOps(o.options.pre, pipeState);
                 }
                 let post = [];
                 if (Array.isArray(o.options.post)) {
-                    [post] = oper_1.compileOps(o.options.post, pipeState);
+                    [post] = await oper_1.compileOps(o.options.post, pipeState);
                 }
-                const [spread] = oper_1.compileOps(o.ops, pipeState);
+                const [spread] = await oper_1.compileOps(o.ops, pipeState);
                 cPipes.push({
                     pre,
                     post,
@@ -86,7 +87,7 @@ class OpPipeline extends op_1.Op {
         });
         // console.error(util.inspect(pipeline, false, null, true /* enable colors */))
         function compilePrePost(step, slot, idx) {
-            let slots = [];
+            const slots = [];
             step.forEach((p) => {
                 p[slot].forEach((x, i) => {
                     if (!slots[i]) {
@@ -173,7 +174,7 @@ class OpPipeline extends op_1.Op {
         //     P_X: ('' + i).padStart(5, '0'),
         //     P_I: i
         //   })
-        //   const [cops] = compileOps(this.ops, withState) // Note: dumps state?
+        //   const [cops] = await compileOps(this.ops, withState) // Note: dumps state?
         //   if (cops.length > 0) {
         //     compiled = compiled.concat(cops)
         //   }
