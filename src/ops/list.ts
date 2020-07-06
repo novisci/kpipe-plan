@@ -28,6 +28,7 @@ export class OpList extends Op {
 
     // files.forEach(async (f) => {
     await files.reduce(async (prev, f) => {
+      await prev
       const withState = Object.assign({}, state, {
         IT: f
       })

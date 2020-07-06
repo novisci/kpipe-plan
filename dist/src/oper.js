@@ -5,7 +5,6 @@ async function compileOps(ops, state) {
     let compiled = [];
     let withState = state;
     await ops.reduce(async (prev, o) => {
-        // ops.forEach(async (o) => {
         await prev;
         const [cops, ste] = await o.substitute(withState, false).compile(withState);
         compiled = compiled.concat(cops);

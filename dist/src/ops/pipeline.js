@@ -47,7 +47,9 @@ class OpPipeline extends op_1.Op {
             });
             const cPipes = [];
             // console.error(util.inspect(this, false, null, true /* enable colors */))
-            this.ops.forEach(async (o) => {
+            // this.ops.forEach(async (o) => {
+            await this.ops.reduce(async (prev, o) => {
+                await prev;
                 // console.error(util.inspect(o, false, null, true /* enable colors */))
                 let pre = [];
                 if (Array.isArray(o.options.pre)) {
@@ -63,7 +65,7 @@ class OpPipeline extends op_1.Op {
                     post,
                     spread
                 });
-            });
+            }, Promise.resolve());
             cSteps.push(cPipes);
         }
         // Arrange into the sequenced pipeline

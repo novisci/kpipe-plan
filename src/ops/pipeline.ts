@@ -58,7 +58,9 @@ export class OpPipeline extends Op {
       })
       const cPipes: PipeStep[] = []
       // console.error(util.inspect(this, false, null, true /* enable colors */))
-      this.ops.forEach(async (o) => {
+      // this.ops.forEach(async (o) => {
+      await this.ops.reduce(async (prev, o) => {
+        await prev
         // console.error(util.inspect(o, false, null, true /* enable colors */))
         let pre: Op[] = []
         if (Array.isArray(o.options.pre)) {
@@ -74,7 +76,7 @@ export class OpPipeline extends Op {
           post,
           spread
         })
-      })
+      }, Promise.resolve())
       cSteps.push(cPipes)
     }
 

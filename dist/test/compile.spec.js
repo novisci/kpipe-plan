@@ -6,27 +6,27 @@ const testCompile = async (ops) => {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const [[...cops], { ...state }] = await __1.compileOps(__1.parseOps(ops), {});
 };
-test('malformed input (<2 elements) throws error', () => {
-    expect(() => testCompile([['def']])).toThrow();
+test('malformed input (<2 elements) throws error', async () => {
+    await expect(async () => testCompile([['def']])).rejects;
 });
-test('malformed input (>3 elements) throws error', () => {
-    expect(() => testCompile([['def', {}, {}, []]])).toThrow();
+test('malformed input (>3 elements) throws error', async () => {
+    await expect(async () => testCompile([['def', {}, {}, []]])).rejects;
 });
-test('malformed input (non-keyword) throws error', () => {
-    expect(() => testCompile([['fed', {}]])).toThrow();
+test('malformed input (non-keyword) throws error', async () => {
+    await expect(async () => testCompile([['fed', {}]])).rejects;
 });
-test('malformed input (array not-last) throws error', () => {
-    expect(() => testCompile([['def', [], {}]])).toThrow();
+test('malformed input (array not-last) throws error', async () => {
+    await expect(async () => testCompile([['def', [], {}]])).rejects;
 });
-test('malformed input (nested throws error', () => {
-    expect(() => testCompile([
+test('malformed input (nested throws error', async () => {
+    await expect(async () => testCompile([
         ['def', {}],
         ['with', {}, [
                 ['task', 'one'],
                 ['task', 'two'],
                 ['fred']
             ]]
-    ])).toThrow();
+    ])).rejects;
 });
 test('def operation substitues values', async () => {
     const ops = [
