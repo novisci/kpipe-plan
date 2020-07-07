@@ -2,6 +2,7 @@ import { substitute } from '../subs'
 import { Op, OpInitData, State, Result } from '../op'
 import { parseOps } from '../parse'
 import { compileOps } from '../oper'
+import fs from 'fs'
 
 // -------------------------------------------
 // INCLUDE
@@ -21,8 +22,22 @@ export class OpInclude extends Op {
   async compile (state: Readonly<State>): Promise<Result> {
     // Load external json file
     const path = this.name.replace(/\.json$/i, '')
-    const ext = JSON.parse(require('fs').readFileSync(`${path}.json`))
 
-    return compileOps(parseOps(ext), state)
+    return new Promise((resolve, reject) => {
+      fs.readFile(`${path}.json`, (err, body) => {
+        if (err) return reject(err)
+        let data = null
+        try {
+          data = JSON.parse(body.toString())
+        } catch (err) {
+          console.error(err)
+          data = null
+        }
+        if (data && Array.isArray(data)) {
+          return resolve(compileOps(parseOps(data), state))
+        }
+        reject(Error(`Unexpected include file object ${data}`))
+      })
+    })
   }
 }

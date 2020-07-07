@@ -1,9 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const subs_1 = require("../subs");
 const op_1 = require("../op");
 const parse_1 = require("../parse");
 const oper_1 = require("../oper");
+const fs_1 = __importDefault(require("fs"));
 // -------------------------------------------
 // INCLUDE
 // -------------------------------------------
@@ -20,8 +24,24 @@ class OpInclude extends op_1.Op {
     async compile(state) {
         // Load external json file
         const path = this.name.replace(/\.json$/i, '');
-        const ext = JSON.parse(require('fs').readFileSync(`${path}.json`));
-        return oper_1.compileOps(parse_1.parseOps(ext), state);
+        return new Promise((resolve, reject) => {
+            fs_1.default.readFile(`${path}.json`, (err, body) => {
+                if (err)
+                    return reject(err);
+                let data = null;
+                try {
+                    data = JSON.parse(body.toString());
+                }
+                catch (err) {
+                    console.error(err);
+                    data = null;
+                }
+                if (data && Array.isArray(data)) {
+                    return resolve(oper_1.compileOps(parse_1.parseOps(data), state));
+                }
+                reject(Error(`Unexpected include file object ${data}`));
+            });
+        });
     }
 }
 exports.OpInclude = OpInclude;

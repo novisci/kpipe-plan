@@ -1,5 +1,8 @@
 # `kpipe` Plan Compiler
 
+>**Breaking change for v1.0.0:** exported function `compileOps` has been changed to an async function and returns a `Promise<[ Op[], State ]>` instead of the former synchronous `Result` value, `[ Op[], State ]`
+
+
 ## Basics
 A similar structure is used for all items found in a set of kpipe operations. Some arguments are optional and/or inferred by their position. The valid forms of an operation are:
 
@@ -194,6 +197,16 @@ This gets transformed into:
   ["task", "tasks/convertFile", ["path/to/files/file+003.csv"]]
 ]
 ```
+
+_new in v1.0.0_
+
+### `list`
+
+A _list_ is an external reference to a text file stored on the filesystem or in Amazon S3. The contents of the file are read and the nested
+Ops in the _list_ are repeated for every line in the file. The special variable _IT_ is set to the contents of the line for each repeated instance of the nested Ops. The _IT_ variable can be substituted in child ops (using `${IT}`) and it will be replaced with the current line in the file.
+
+>Note: It's assumed the machine/user performing the compilation has sufficient permissions to access AWS and the S3 location. 
+
 _new in v0.9.11_
 
 
