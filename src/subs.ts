@@ -48,6 +48,10 @@ parser.functions.basename = (url: string, ext?: string): string => {
   return path.basename(url, ext)
 }
 
+parser.functions.dirname = (url: string): string => {
+  return path.dirname(url)
+}
+
 // function evaluateExprOld (m: string, vars: any, strict: boolean): string {
 //   const v = m.substring(2, m.length - 1)
 //   if (typeof vars[v] !== 'undefined') {
