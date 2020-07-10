@@ -1,4 +1,5 @@
 import { Parser, Expression } from 'expr-eval'
+import path from 'path'
 
 const parser = new Parser({
   operators: {
@@ -41,6 +42,10 @@ parser.functions.concat = (...args: any[]): string => {
     }
   })
   return ''.concat(...args)
+}
+
+parser.functions.basename = (url: string, ext?: string): string => {
+  return path.basename(url, ext)
 }
 
 // function evaluateExprOld (m: string, vars: any, strict: boolean): string {
