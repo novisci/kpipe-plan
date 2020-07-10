@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const expr_eval_1 = require("expr-eval");
+const path_1 = __importDefault(require("path"));
 const parser = new expr_eval_1.Parser({
     operators: {
         assignment: false
@@ -38,6 +42,12 @@ parser.functions.concat = (...args) => {
         }
     });
     return ''.concat(...args);
+};
+parser.functions.basename = (url, ext) => {
+    return path_1.default.basename(url, ext);
+};
+parser.functions.dirname = (url) => {
+    return path_1.default.dirname(url);
 };
 // function evaluateExprOld (m: string, vars: any, strict: boolean): string {
 //   const v = m.substring(2, m.length - 1)
