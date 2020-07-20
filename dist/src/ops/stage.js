@@ -29,18 +29,24 @@ class OpStage extends op_1.Op {
     }
     execute(state) {
         let compiled = [];
-        const withState = Object.assign({}, state, {
+        const withState = {
+            ...state,
             stageIdx: typeof state.stageIdx !== 'undefined' ? state.stageIdx + 1 : 0,
             stageUid: uidgen.generateSync(),
-            stageName: this.name,
-            stepIdx: 0
-        });
+            stageName: this.name
+            // stepIdx: 0
+        };
+        let stepIdx = 0;
         this.ops.forEach((o) => {
-            const [[...cops]] = oper_1.executeOps([o], withState); // Note: dumps state?
+            const stepState = {
+                ...withState,
+                stepIdx
+            };
+            const [[...cops]] = oper_1.executeOps([o], stepState); // Note: dumps state?
             if (cops.length > 0) {
                 compiled = compiled.concat(cops);
             }
-            withState.stepIdx++;
+            stepIdx++;
         });
         return [compiled, withState];
     }

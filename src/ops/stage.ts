@@ -1,4 +1,4 @@
-import { Op, OpInitData, State, Result, ExecResult } from '../op'
+import { Op, OpInitData, State, Result, ExecPlanState, ExecStageState, ExecStepState } from '../op'
 import { compileOps, executeOps } from '../oper'
 import { Task } from '../task'
 
@@ -31,22 +31,28 @@ export class OpStage extends Op {
     })], ste]
   }
 
-  execute (state: Readonly<State>): ExecResult {
+  execute (state: Readonly<ExecPlanState>): [ Task[], ExecPlanState ] {
     let compiled: Task[] = []
 
-    const withState = Object.assign({}, state, {
+    const withState: ExecStageState = {
+      ...state,
       stageIdx: typeof state.stageIdx !== 'undefined' ? state.stageIdx as number + 1 : 0,
       stageUid: uidgen.generateSync(),
-      stageName: this.name,
-      stepIdx: 0
-    })
+      stageName: this.name
+      // stepIdx: 0
+    }
 
+    let stepIdx = 0
     this.ops.forEach((o) => {
-      const [[...cops]] = executeOps([o], withState) // Note: dumps state?
+      const stepState: ExecStepState = {
+        ...withState,
+        stepIdx
+      }
+      const [[...cops]] = executeOps([o], stepState) // Note: dumps state?
       if (cops.length > 0) {
         compiled = compiled.concat(cops)
       }
-      withState.stepIdx++
+      stepIdx++
     })
 
     return [compiled, withState]

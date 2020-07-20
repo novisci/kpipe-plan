@@ -1,4 +1,5 @@
-import { Op, OpInitData, State, Result, ExecResult } from '../op'
+import { Task } from '../task'
+import { Op, OpInitData, State, Result, ExecState, ExecPlanState, ExecResult } from '../op'
 import { executeOps, compileOps } from '../oper'
 
 // -------------------------------------------
@@ -29,12 +30,16 @@ export class OpPlan extends Op {
     })], ste]
   }
 
-  execute (state: Readonly<State>): ExecResult {
-    state = Object.assign(state, {
+  execute (state: Readonly<ExecState>): [ Task[], ExecState ] {
+    // state = Object.assign(state, {
+    //   planName: this.name,
+    //   planUid: uidgen.generateSync()
+    // })
+    const withState: ExecPlanState = {
+      ...state,
       planName: this.name,
       planUid: uidgen.generateSync()
-    })
-
-    return executeOps(this.ops, state)
+    }
+    return executeOps(this.ops, withState)
   }
 }

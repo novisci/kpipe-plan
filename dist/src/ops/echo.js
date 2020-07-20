@@ -21,7 +21,10 @@ class OpEcho extends op_1.Op {
         });
     }
     execute(state) {
-        const withState = Object.assign({}, state, { taskUid: uidgen.generateSync() });
+        const withState = {
+            ...state,
+            taskUid: uidgen.generateSync()
+        };
         return [
             [{
                     taskId: task_1.taskId(withState),

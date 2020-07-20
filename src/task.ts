@@ -1,7 +1,14 @@
 // declare class Op {}
 // type Props = { [key: string]: (string | number | string[] | number[] | Op[]) }
 type Props = { [key: string]: any}
-type State = { [key: string]: (string | number | Props) }
+
+// type State = { [key: string]: (string | number | Props) }
+export interface TaskIndex {
+  planUid: string
+  stageIdx: number
+  stepIdx: number
+  taskUid: string
+}
 
 // -------------------------------------------
 export interface Task {
@@ -32,9 +39,9 @@ export function emitTasks (tasks: Task[], stream: any): void {
   stream.write(']\n')
 }
 
-export const taskId = (state: Readonly<State>): string => `${state.planUid}-${('' + state.stageIdx).padStart(2, '0')}-${('' + state.stepIdx).padStart(2, '0')}-${state.taskUid}`
+export const taskId = (state: Readonly<TaskIndex>): string => `${state.planUid}-${('' + state.stageIdx).padStart(2, '0')}-${('' + state.stepIdx).padStart(2, '0')}-${state.taskUid}`
 
-export const stateFromTaskId = (id: string): { [key: string]: number|string } => {
+export const stateFromTaskId = (id: string): TaskIndex => {
   const r = /([A-Za-z0-9]+)-(\d+)-(\d+)-([A-Za-z0-9]+)/
   const m = r.exec(id)
   if (!m) {

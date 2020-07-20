@@ -27,11 +27,16 @@ class OpPlan extends op_1.Op {
                 })], ste];
     }
     execute(state) {
-        state = Object.assign(state, {
+        // state = Object.assign(state, {
+        //   planName: this.name,
+        //   planUid: uidgen.generateSync()
+        // })
+        const withState = {
+            ...state,
             planName: this.name,
             planUid: uidgen.generateSync()
-        });
-        return oper_1.executeOps(this.ops, state);
+        };
+        return oper_1.executeOps(this.ops, withState);
     }
 }
 exports.OpPlan = OpPlan;

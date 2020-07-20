@@ -1,4 +1,4 @@
-import { Task } from './task'
+import { Task, TaskIndex } from './task'
 
 // -------------------------------------------
 const runOpKeywords = ['echo', 'task', 'exec']
@@ -8,9 +8,30 @@ export const opKeywords = [...runOpKeywords, ...compileOpKeywords, ...macroOpKey
 
 // type Props = { [key: string]: (string | number | string[] | number[] | Op[]) }
 export type Props = { [key: string]: any }
-export type State = { [key: string]: (string | number | Props) }
 export type Result = [ Op[], State ]
-export type ExecResult = [ Task[], State ]
+export type ExecResult = [ Task[], ExecState ]
+
+// State holds information about the current task step plus
+//  a mutable set of plan defined variables
+export type State = { [key: string]: (string | number | Props) }
+
+// Execution state matches the plan hierarchy
+export type ExecState = State
+export interface ExecPlanState extends ExecState {
+  planName: string
+  planUid: string
+}
+export interface ExecStageState extends ExecPlanState {
+  stageIdx: number
+  stageUid: string
+  stageName: string
+}
+export interface ExecStepState extends ExecStageState {
+  stepIdx: number
+}
+export interface ExecTaskState extends ExecStepState {
+  taskUid: string
+}
 
 // -------------------------------------------
 type OpArgData = readonly [string, Props, any[]]
@@ -84,7 +105,7 @@ export class Op {
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  execute (state: Readonly<State>): ExecResult {
+  execute (state: Readonly<ExecState>): ExecResult {
     throw Error(`execute() is undefined for ${this.keyword}`)
   }
 }

@@ -1,6 +1,6 @@
 import { substitute } from '../subs'
-import { taskId } from '../task'
-import { Op, OpInitData, State, ExecResult } from '../op'
+import { taskId, Task } from '../task'
+import { Op, OpInitData, State, ExecStepState, ExecTaskState } from '../op'
 
 // -------------------------------------------
 const UIDGenerator = require('uid-generator')
@@ -22,8 +22,8 @@ export class OpTask extends Op {
     })
   }
 
-  execute (state: Readonly<State>): ExecResult {
-    const withState = Object.assign({}, state, { taskUid: uidgen.generateSync() })
+  execute (state: Readonly<ExecStepState>): [ Task[], ExecStepState ] {
+    const withState: ExecTaskState = { ...state, taskUid: uidgen.generateSync() }
 
     return [
       [{

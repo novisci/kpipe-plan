@@ -1,4 +1,5 @@
-import { Op, OpInitData, State, Result, ExecResult } from '../op'
+import { Op, OpInitData, State, Result, ExecStepState } from '../op'
+import { Task } from '../task'
 import { compileOps, executeOps } from '../oper'
 
 // -------------------------------------------
@@ -26,7 +27,7 @@ export class OpSpread extends Op {
     })], ste]
   }
 
-  execute (state: Readonly<State>): ExecResult {
+  execute (state: Readonly<ExecStepState>): [Task[], ExecStepState] {
     // Spread generates ops with a shared stepIdx
     return executeOps(this.ops, state)
   }

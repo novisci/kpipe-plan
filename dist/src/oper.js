@@ -14,7 +14,6 @@ async function compileOps(ops, state) {
     return [compiled, withState];
 }
 exports.compileOps = compileOps;
-// -------------------------------------------
 function executeOps(ops, state) {
     let executed = [];
     let withState = { ...state };
