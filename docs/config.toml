@@ -1,10 +1,4 @@
 baseURL = "http://example.org/"
 languageCode = "en-us"
 title = "My New Hugo Site"
-theme = "book"
-DefaultContentLanguage = "en"
-
-[languages]
-  [languages.en]
-    title = "My blog"
-    weight = 1
+theme = "docsy"

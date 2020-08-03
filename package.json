@@ -15,6 +15,9 @@
   "author": "Paul Rowan <prowan@novisci.com>",
   "license": "MIT",
   "repository": "github:novisci/kpipe-plan",
+  "hugo-bin": {
+    "buildTags": "extended"
+  },
   "devDependencies": {
     "@babel/parser": "^7.7.3",
     "@babel/types": "^7.7.2",
@@ -23,6 +26,7 @@
     "@types/uid-generator": "^2.0.2",
     "@typescript-eslint/eslint-plugin": "^2.11.0",
     "@typescript-eslint/parser": "^2.11.0",
+    "autoprefixer": "^9.8.5",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
     "concurrently": "^4.1.2",
@@ -38,6 +42,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "hugo-bin": "^0.62.3",
     "jest": "^25.2.7",
+    "postcss-cli": "^7.1.1",
     "ts-jest": "^25.3.1",
     "ts-node": "^8.8.1",
     "typescript": "^3.7.2"
