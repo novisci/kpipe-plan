@@ -3,6 +3,6 @@
     "PARAM1": "Testing substitution"
   }],
   ["plan", "Test include", [
-    ["include", "test/include-stage"]
+    ["include", "./include-stage"]
   ]]
 ]

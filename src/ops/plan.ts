@@ -1,5 +1,5 @@
 import { Task } from '../task'
-import { Op, OpInitData, State, Result, ExecState, ExecPlanState, ExecResult } from '../op'
+import { Op, OpInitData, State, Result, ExecState, ExecPlanState } from '../op'
 import { executeOps, compileOps } from '../oper'
 
 // -------------------------------------------

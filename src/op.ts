@@ -1,4 +1,4 @@
-import { Task, TaskIndex } from './task'
+import { Task } from './task'
 
 // -------------------------------------------
 const runOpKeywords = ['echo', 'task', 'exec']
